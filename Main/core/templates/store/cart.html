@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Shopping Cart</h2>
+    {% if cart.items.all %}
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart.items.all %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ item.item.image.url }}" alt="{{ item.item.name }}" style="width: 50px; height: 50px; object-fit: cover;" class="me-3">
+                                <div>
+                                    <h6 class="mb-0">{{ item.item.name }}</h6>
+                                    <small class="text-muted">Stock: {{ item.item.stock }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>৳{{ item.item.price }}</td>
+                        <td style="width: 200px;">
+                            <form method="post" action="{% url 'update_cart' item.item.id %}" class="d-flex align-items-center">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.item.stock }}" class="form-control form-control-sm me-2" style="width: 80px">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                            </form>
+                        </td>
+                        <td>৳{{ item.get_total }}</td>
+                        <td>
+                            <form method="post" action="{% url 'remove_from_cart' item.item.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                        <td colspan="2"><strong>৳{{ cart.get_total }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <a href="{% url 'all_store_items' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+            </a>
+            <a href="{% url 'checkout' %}" class="btn btn-primary">
+                <i class="bi bi-cart-check me-2"></i>Proceed to Checkout
+            </a>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-cart3 display-1 text-muted mb-4"></i>
+            <h4 class="text-muted mb-4">Your cart is empty</h4>
+            <a href="{% url 'all_store_items' %}" class="btn btn-primary">
+                <i class="bi bi-shop me-2"></i>Continue Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

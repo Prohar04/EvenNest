@@ -1,0 +1,40 @@
+{% load chat_tags %}
+
+{% if chats %}
+    <div class="list-group list-group-flush">
+        {% for chat in chats %}
+            {% unread_messages_count user chat as unread %}
+            <a href="{% url 'chat_detail' chat.id %}" class="list-group-item list-group-item-action chat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center">
+                            <h6 class="mb-1">
+                                {% if user.is_staff %}
+                                    {{ chat.user.username }}
+                                    {% if not chat.is_active %}
+                                        <span class="badge bg-secondary chat-badge ms-2">Closed</span>
+                                    {% endif %}
+                                {% else %}
+                                    Support Chat
+                                {% endif %}
+                            </h6>
+                            {% if unread > 0 %}
+                                <span class="badge bg-danger rounded-pill chat-badge ms-2">{{ unread }}</span>
+                            {% endif %}
+                        </div>
+                        {% with last_message=chat.get_last_message %}
+                            {% if last_message %}
+                                <p class="chat-preview mb-0">
+                                    <span class="{% if last_message.sender == user %}text-primary{% endif %}">
+                                        {% if last_message.sender == user %}You:{% else %}{{ last_message.sender.username }}:{% endif %}
+                                    </span>
+                                    {{ last_message.content|truncatechars:50 }}
+                                </p>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}

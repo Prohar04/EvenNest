@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">My Bookings</h2>
+
+    {% if bookings %}
+    <div class="row">
+        {% for booking in bookings %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-light">                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ booking.get_service_type_display }}</h5>
+                        <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% elif booking.status == 'cancelled' %}danger{% else %}info{% endif %} text-white">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% with service=booking.get_service %}
+                    {% if service %}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="{{ service.image.url }}" alt="{{ service.title }}" class="img-fluid rounded">
+                        </div>
+                        <div class="col-md-8">
+                            <h6>{{ service.title }}</h6>
+                            <p class="mb-1"><strong>Date:</strong> {{ booking.date|date:"F j, Y" }}</p>
+                            <p class="mb-1"><strong>Time:</strong> {{ booking.time_slot|time:"g:i A" }}</p>
+                            <p class="mb-1"><strong>Amount:</strong> ৳{{ booking.total_amount }}</p>
+                            {% if booking.requirements %}
+                            <p class="mb-1"><strong>Requirements:</strong> {{ booking.requirements }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="card-footer bg-light">
+                    <small class="text-muted">Booked on {{ booking.created_at|date:"F j, Y" }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        You haven't made any bookings yet.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

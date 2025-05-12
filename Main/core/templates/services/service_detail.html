@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'all_services' %}">Services</a></li>
+            <li class="breadcrumb-item active">{{ service.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm border-0">
+        <div class="row g-0">
+            <div class="col-md-6">
+                {% if service.image %}
+                <img src="{{ service.image.url }}" class="img-fluid rounded-start" alt="{{ service.title }}" style="width: 100%; height: 400px; object-fit: cover;">
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h2 class="card-title">{{ service.title }}</h2>
+                        <small class="text-muted">Listed {{ service.created_at|date:"F j, Y" }} at {{ service.created_at|time:"g:i A" }}</small>
+                    </div>
+                    <span class="badge bg-primary mb-3">{{ service.category.name }}</span>
+                    <p class="card-text">{{ service.description }}</p>
+                    <p class="card-text">
+                        <strong class="text-primary h3">৳{{ service.price }}</strong>
+                    </p>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        {% if service_type %}
+                        <a href="{% url 'create_booking' service_type service.id %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-calendar-plus me-2"></i>Book Now
+                        </a>
+                        {% endif %}
+                        <button class="btn btn-outline-primary btn-lg">
+                            <i class="bi bi-chat-dots me-2"></i>Contact Provider
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
