@@ -25,7 +25,7 @@
                 <div class="card h-100 shadow-sm search-result-card">
                     {% if service.image %}
                     <div class="card-img-wrapper">
-                        <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.title }}">
+                        <img src="{{ service.image.url }}" alt="{{ service.title }}" class="card-img-top">
                         <div class="card-img-overlay d-flex align-items-start justify-content-end">
                             <span class="badge bg-primary">{{ service.category.name }}</span>
                         </div>
@@ -33,7 +33,7 @@
                     {% endif %}
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title text-gradient mb-3">
-                            <a href="{% url 'service_detail' service.id %}" class="text-decoration-none">{{ service.title }}</a>
+                            <a href="{% url 'service_detail' service.id }}" class="text-decoration-none">{{ service.title }}</a>
                         </h5>
                         <p class="card-text flex-grow-1 text-muted">{{ service.description|truncatewords:15 }}</p>
                         <div class="mt-3">
@@ -68,7 +68,7 @@
                 <div class="card h-100 shadow-sm search-result-card">
                     {% if item.image %}
                     <div class="card-img-wrapper">
-                        <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img-top">
                         <div class="card-img-overlay d-flex align-items-start justify-content-between">
                             <span class="badge bg-primary">{{ item.category.name }}</span>
                             {% if user.is_authenticated %}

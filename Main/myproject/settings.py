@@ -109,16 +109,27 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'defaultdb'),
-        'USER': os.getenv('DB_USER', 'avnadmin'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'AVNS_K8FWWMb4RApyOdx2mh9'),
-        'HOST': os.getenv('DB_HOST', 'eventmanagement-proharsaha04-033f.c.aivencloud.com'),
-        'PORT': os.getenv('DB_PORT', '13270'),
+# Use SQLite for local development if MySQL is not available
+USE_SQLITE = os.getenv('USE_SQLITE', 'True') == 'True'
+
+if USE_SQLITE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT', '3306'),
+        }
+    }
 
 
 # Password validation

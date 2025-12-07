@@ -230,3 +230,85 @@
 .message-form .btn-primary i {
     font-size: 1.2rem;
 }
+
+/* Fixed Image Box Styling for Products/Services */
+.card-img-wrapper {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 250px;
+    background: #f0f0f0;
+}
+
+.card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    display: block;
+}
+
+.card:hover .card-img-wrapper img {
+    transform: scale(1.05);
+}
+
+.card-img-wrapper .card-img-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.3s ease;
+    padding: 1rem;
+}
+
+.card:hover .card-img-wrapper .card-img-overlay {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure inline image tags also have fixed height */
+.card-img-top {
+    width: 100% !important;
+    height: 250px !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+/* Responsive image heights for smaller screens */
+@media (max-width: 768px) {
+    .card-img-wrapper {
+        height: 200px;
+    }
+    
+    .card-img-top {
+        height: 200px !important;
+    }
+    
+    .service-detail-image {
+        height: 300px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-img-wrapper {
+        height: 180px;
+    }
+    
+    .card-img-top {
+        height: 180px !important;
+    }
+    
+    .service-detail-image {
+        height: 250px !important;
+    }
+}
+
+/* Service detail page image styling */
+.service-detail-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
+}
