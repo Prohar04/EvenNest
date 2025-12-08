@@ -49,16 +49,6 @@ urlpatterns = [
     path('wishlist/', views.wishlist_view, name='wishlist'),
     path('wishlist/add/<int:item_id>/', views.add_to_wishlist, name='add_to_wishlist'),
 
-    # Chat URLs
-    path('chat/', views.chat_list, name='chat_list'),
-    path('chat/<int:chat_id>/', views.chat_detail, name='chat_detail'),
-    path('chat/start/', views.start_chat, name='start_chat'),
-    path('chat/<int:chat_id>/message/', views.create_message, name='create_message'),
-    path('chat/<int:chat_id>/messages/<int:last_message_id>/', views.get_new_messages, name='get_new_messages'),
-    path('chat/<int:chat_id>/toggle_status/', views.toggle_chat_status, name='toggle_chat_status'),
-    path('chat/<int:chat_id>/typing/', views.set_typing_status, name='set_typing_status'),
-    path('chat/<int:chat_id>/typing/status/', views.get_typing_status, name='get_typing_status'),
-
     # Booking URLs
     path('bookings/', views.booking_list, name='booking_list'),
     path('book/<str:service_type>/<int:service_id>/', views.create_booking, name='create_booking'),
