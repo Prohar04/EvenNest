@@ -63,30 +63,39 @@ The app has WebSocket infrastructure (Channels, middleware) but chat models are 
 
 ### Deployment & Configuration
 
-#### Settings.py Key Points
-- Uses environment variables: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG`, `ALLOWED_HOSTS` (currently empty - fill before prod)
-- Channels + Channels_Redis installed but InMemoryChannelLayer used in dev
-- `DEBUG = True` in development - **set to False for production**
-- SQLite for dev, use PostgreSQL + Redis for production
-
-#### Run & Debug
+#### Local Development
 ```bash
 cd d:\EvenNest\Main
 python manage.py runserver
 # Access: http://127.0.0.1:8000/
 
-# Load seed data
+# Load seed data (first time)
 python manage.py loaddata core/fixtures/initial_products.json
 
-# Create admin
+# Create admin user
 python manage.py createsuperuser
-# OR use: python create_admin.py (admin2/admin123)
 
 # Assign images to products
 python manage.py assign_product_images
 ```
 
-Test credentials exist in db.sqlite3: `admin2/admin123` (admin), `testclient/password123` (client)
+Test credentials in local db: `admin2/admin123` (admin), `testclient/password123` (client)
+
+#### Production (Vercel)
+- **Database**: PostgreSQL (Vercel Postgres, Supabase, Railway, or Neon)
+- **Static Files**: Collected to `staticfiles/`, served via WhiteNoise CDN
+- **Media Files**: Persist via AWS S3 or similar (local uploads won't survive redeploys)
+- **Build**: Runs `collectstatic` and `migrate` via `build.sh` and `vercel.json`
+- **WebSockets**: Currently disabled - chat feature needs alternative implementation (polling or separate service)
+- **See**: `VERCEL_DEPLOYMENT.md` for step-by-step deployment guide
+
+#### Settings.py Key Points
+- Environment-aware: switches between SQLite (dev) and PostgreSQL (prod)
+- Uses `dj_database_url` to parse `DATABASE_URL` env var
+- `VERCEL_ENV` flag controls security settings (SSL redirect, HSTS headers, CSP)
+- `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` read from env vars
+- `whitenoise` handles static file serving on Vercel
+- Django Debug Toolbar disabled in production (`DEBUG = False`)
 
 ### Key Conventions
 
@@ -140,7 +149,8 @@ When adding a new service type:
 - `CHAT_IMPLEMENTATION_SUMMARY.md` - WebSocket architecture (outdated post-migration 0015)
 - `MODELS_AND_FIXTURE_GUIDE.md` - complete model field reference
 - `SEED_DATA_SUMMARY.md` - fixture structure and data loading
+- `VERCEL_DEPLOYMENT.md` - complete Vercel deployment guide
 
 ---
 *Last updated: December 8, 2025*  
-*Django 5.2rc1 | Python 3.13 | Channels 4.x*
+*Django 5.2rc1 | Python 3.13 | Channels 4.x | Ready for Vercel Deployment*
