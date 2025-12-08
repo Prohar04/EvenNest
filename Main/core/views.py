@@ -586,10 +586,19 @@ def chat_detail(request, chat_id):
     chat.mark_messages_read(request.user)
     chat.update_user_status(request.user)
     
+    # Get other user and their presence
+    other_user = chat.get_other_user(request.user)
+    other_user_online = False
+    if other_user:
+        presence = chat.get_user_presence(other_user)
+        other_user_online = presence.get('online', False)
+    
     # Add admin context
     context = {
         'chat': chat,
         'messages': messages,
+        'other_user': other_user,
+        'other_user_online': other_user_online,
     }
     
     if request.user.is_staff:
