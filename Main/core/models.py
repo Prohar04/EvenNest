@@ -320,3 +320,48 @@ class Booking(models.Model):
         elif self.service_type == 'printing':
             return PrintingService.objects.get(id=self.service_id)
         return None
+
+
+class Contact(models.Model):
+    """Model to store contact inquiries from users"""
+    CONTACT_METHOD_CHOICES = [
+        ('email', 'Email'),
+        ('phone', 'Phone'),
+        ('whatsapp', 'WhatsApp'),
+        ('other', 'Other'),
+    ]
+    
+    SERVICE_TYPE_CHOICES = [
+        ('event', 'Event Management'),
+        ('photo', 'Photography'),
+        ('catering', 'Catering'),
+        ('printing', 'Printing Service'),
+        ('store', 'Store Item'),
+        ('general', 'General Inquiry'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contacts', null=True, blank=True)
+    full_name = models.CharField(max_length=150)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, blank=True)
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    preferred_contact_method = models.CharField(max_length=20, choices=CONTACT_METHOD_CHOICES, default='email')
+    service_type = models.CharField(max_length=20, choices=SERVICE_TYPE_CHOICES, default='general')
+    service_id = models.PositiveIntegerField(null=True, blank=True, help_text="ID of the related service/item if applicable")
+    service_name = models.CharField(max_length=200, blank=True, help_text="Name of the service/item being inquired about")
+    status = models.CharField(max_length=20, choices=[('new', 'New'), ('read', 'Read'), ('responded', 'Responded')], default='new')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['email']),
+            models.Index(fields=['-created_at']),
+            models.Index(fields=['service_type', 'service_id']),
+        ]
+    
+    def __str__(self):
+        return f"Contact from {self.full_name} - {self.subject}"
+

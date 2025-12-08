@@ -71,7 +71,7 @@
                             {% if item.image %}
                             <a href="{% url 'store_item_detail' item.id %}" class="card-img-link text-decoration-none">
                                 <div class="card-img-wrapper">
-                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img-top">
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img-top" loading="lazy" decoding="async">
                                 </div>
                             </a>
                             {% endif %}

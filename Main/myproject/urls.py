@@ -52,6 +52,10 @@ urlpatterns = [
     # Booking URLs
     path('bookings/', views.booking_list, name='booking_list'),
     path('book/<str:service_type>/<int:service_id>/', views.create_booking, name='create_booking'),
+    
+    # Contact URLs
+    path('contact-provider/', views.contact_provider, name='contact_provider'),
+    path('contact-success/', views.contact_success, name='contact_success'),
 ]
 
 if settings.DEBUG:

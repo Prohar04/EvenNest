@@ -64,7 +64,7 @@
                             {% if service.image %}
                             <a href="{% url 'service_detail' service.id %}" class="card-img-link text-decoration-none">
                                 <div class="card-img-wrapper">
-                                    <img src="{{ service.image.url }}" alt="{{ service.title }}" class="card-img-top">
+                                    <img src="{{ service.image.url }}" alt="{{ service.title }}" class="card-img-top" loading="lazy" decoding="async">
                                 </div>
                             </a>
                             {% endif %}

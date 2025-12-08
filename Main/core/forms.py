@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Service, ServiceCategory, StoreItem, StoreCategory, UserProfile, Booking
+from .models import Service, ServiceCategory, StoreItem, StoreCategory, UserProfile, Booking, Contact
 import re
 from django.utils import timezone
 
@@ -155,3 +155,90 @@ class BookingForm(forms.ModelForm):
             )
             if booking_datetime < timezone.now():
                 raise forms.ValidationError('Cannot book for a past time.')
+
+
+class ContactForm(forms.ModelForm):
+    """Form for contact inquiries"""
+    full_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Your Full Name',
+            'required': True
+        }),
+        label='Full Name'
+    )
+    
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'your.email@example.com',
+            'required': True
+        }),
+        label='Email Address'
+    )
+    
+    phone = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': '+880 1XXX XXX XXX',
+            'type': 'tel'
+        }),
+        label='Phone Number (Optional)'
+    )
+    
+    subject = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'What is this about?',
+            'required': True
+        }),
+        label='Subject'
+    )
+    
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control form-control-lg',
+            'rows': 6,
+            'placeholder': 'Tell us more about your inquiry...',
+            'required': True
+        }),
+        label='Message / Description'
+    )
+    
+    preferred_contact_method = forms.ChoiceField(
+        choices=Contact.CONTACT_METHOD_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-lg',
+            'required': True
+        }),
+        label='Preferred Contact Method'
+    )
+    
+    service_type = forms.ChoiceField(
+        choices=Contact.SERVICE_TYPE_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'form-select form-select-lg',
+            'required': True
+        }),
+        label='Related Service'
+    )
+    
+    class Meta:
+        model = Contact
+        fields = ['full_name', 'email', 'phone', 'subject', 'message', 'preferred_contact_method', 'service_type']
+    
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if phone and not re.match(r'^[\d\s\+\-\(\)]{7,20}$', phone):
+            raise forms.ValidationError('Please enter a valid phone number.')
+        return phone
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email:
+            raise forms.ValidationError('Email address is required.')
+        return email

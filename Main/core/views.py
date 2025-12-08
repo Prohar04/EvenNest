@@ -35,15 +35,29 @@ def store_categories_processor(request):
     return {'store_categories': categories}
 
 def cart_processor(request):
-    """Context processor to provide cart data to all templates"""
+    """Context processor to provide cart data to all templates - optimized"""
     if request.user.is_authenticated:
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        total_items = sum(item.quantity for item in cart.items.all())
-        return {
-            'user_cart': cart,
-            'cart_total': cart.get_total(),
-            'cart_item_count': total_items
-        }
+        try:
+            # Use select_related for faster queries
+            cart = Cart.objects.select_related('user').prefetch_related('items__item').filter(user=request.user).first()
+            if cart is None:
+                cart, created = Cart.objects.get_or_create(user=request.user)
+            
+            # Get total items efficiently
+            from django.db.models import Sum
+            total_items = cart.items.aggregate(total=Sum('quantity'))['total'] or 0
+            
+            return {
+                'user_cart': cart,
+                'cart_total': cart.get_total(),
+                'cart_item_count': total_items
+            }
+        except:
+            return {
+                'user_cart': None,
+                'cart_total': 0,
+                'cart_item_count': 0
+            }
     return {
         'user_cart': None,
         'cart_total': 0,
@@ -584,3 +598,89 @@ def booking_list(request):
         'bookings': bookings,
         'title': 'My Bookings'  # This will show in the browser tab
     })
+
+
+def contact_provider(request):
+    """View to handle contact provider inquiries - optimized with error handling"""
+    from .forms import ContactForm
+    
+    # Get pre-fill data from query parameters
+    service_type = request.GET.get('service_type', 'general')
+    service_id = request.GET.get('service_id', '')
+    service_name = request.GET.get('service_name', '')
+    
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            try:
+                contact = form.save(commit=False)
+                
+                # If user is authenticated, link them to the contact
+                if request.user.is_authenticated:
+                    contact.user = request.user
+                    # Pre-fill name and email from user profile if not provided
+                    if not contact.full_name:
+                        try:
+                            if hasattr(request.user, 'profile') and request.user.profile.full_name:
+                                contact.full_name = request.user.profile.full_name
+                            else:
+                                contact.full_name = request.user.get_full_name() or request.user.username
+                        except:
+                            contact.full_name = request.user.username
+                    
+                    if not contact.phone and hasattr(request.user, 'profile'):
+                        try:
+                            contact.phone = request.user.profile.phone or ''
+                        except:
+                            contact.phone = ''
+                
+                # Set service info if provided
+                if service_id:
+                    contact.service_id = int(service_id) if service_id.isdigit() else None
+                if service_name:
+                    contact.service_name = service_name[:200]  # Limit to field max length
+                
+                contact.save()
+                
+                messages.success(
+                    request,
+                    'Thank you! Your inquiry has been submitted successfully. We will get back to you shortly.'
+                )
+                return redirect('contact_success')
+            except Exception as e:
+                messages.error(request, f'An error occurred while submitting your form. Please try again.')
+        else:
+            messages.error(request, 'Please correct the errors below and try again.')
+    else:
+        initial_data = {
+            'service_type': service_type,
+        }
+        
+        # Pre-fill user data if authenticated
+        if request.user.is_authenticated:
+            try:
+                if hasattr(request.user, 'profile'):
+                    initial_data['full_name'] = request.user.profile.full_name or request.user.get_full_name()
+                    initial_data['phone'] = request.user.profile.phone or ''
+                else:
+                    initial_data['full_name'] = request.user.get_full_name() or request.user.username
+            except:
+                initial_data['full_name'] = request.user.username
+            
+            initial_data['email'] = request.user.email
+        
+        form = ContactForm(initial=initial_data)
+    
+    context = {
+        'form': form,
+        'service_type': service_type,
+        'service_name': service_name,
+        'service_id': service_id,
+    }
+    
+    return render(request, 'core/contact_provider.html', context)
+
+
+def contact_success(request):
+    """Success page after contact form submission"""
+    return render(request, 'core/contact_success.html')

@@ -245,11 +245,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.cart_count > 0) {
                         if (!cartBadge) {
                             const newBadge = document.createElement('span');
-                            newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger';
+                            newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge-animated';
                             newBadge.textContent = data.cart_count;
                             cartBtn.appendChild(newBadge);
+                            // Add pulse animation to new badge
+                            newBadge.classList.add('pulse');
                         } else {
                             cartBadge.textContent = data.cart_count;
+                            // Add pulse animation when count updates
+                            cartBadge.classList.add('pulse');
+                            setTimeout(() => cartBadge.classList.remove('pulse'), 1800);
                         }
                     } else if (cartBadge) {
                         cartBadge.remove();
