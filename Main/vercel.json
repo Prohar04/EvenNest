@@ -5,8 +5,8 @@
       "src": "myproject/wsgi.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "15mb",
-        "runtime": "python3.13"
+        "maxLambdaSize": "50mb",
+        "runtime": "python3.12"
       }
     },
     {
@@ -19,14 +19,14 @@
       "src": "/static/(.*)",
       "dest": "/static/$1",
       "headers": {
-        "cache-control": "public, max-age=3600, immutable"
+        "cache-control": "max-age=31536000, immutable"
       }
     },
     {
       "src": "/media/(.*)",
       "dest": "/media/$1",
       "headers": {
-        "cache-control": "public, max-age=86400"
+        "cache-control": "max-age=86400"
       }
     },
     {
@@ -35,6 +35,8 @@
     }
   ],
   "env": {
-    "PYTHON_VERSION": "3.13"
+    "DJANGO_SECRET_KEY": "@django_secret_key",
+    "DJANGO_DEBUG": "False",
+    "USE_SQLITE": "False"
   }
 }
