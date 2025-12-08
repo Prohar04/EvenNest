@@ -544,25 +544,25 @@ def add_to_wishlist(request, item_id):
 
 @login_required
 def chat_list(request):
-    """View to list all chats for a user"""
+    """View to list all chats for a user, sorted by most recent message"""
     if request.user.is_staff:
-        # Admin sees all chats with last message
+        # Admin sees all chats sorted by last message
         chats = Chat.objects.select_related('user').prefetch_related(
             Prefetch(
                 'messages',
                 queryset=Message.objects.select_related('sender').order_by('-created_at'),
                 to_attr='recent_messages'
             )
-        ).all()
+        ).order_by('-last_message_at')
     else:
-        # Regular user sees only their chats with last message
+        # Regular user sees only their chats sorted by last message
         chats = Chat.objects.filter(user=request.user).prefetch_related(
             Prefetch(
                 'messages',
                 queryset=Message.objects.select_related('sender').order_by('-created_at'),
                 to_attr='recent_messages'
             )
-        ).all()
+        ).order_by('-last_message_at')
     
     context = {'chats': chats}
     

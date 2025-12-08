@@ -1,74 +1,286 @@
 {% extends 'base.html' %}
 {% load chat_tags %}
 
+{% block extra_css %}
+<style>
+    .chat-list-page {
+        padding: 2rem 0;
+        min-height: calc(100vh - 200px);
+        background: var(--color-gray-100);
+    }
+    
+    .chat-list-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .chat-list-header {
+        background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+        color: var(--color-white);
+        padding: var(--spacing-lg);
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .chat-list-header h3 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        font-size: var(--font-size-lg);
+    }
+    
+    .chat-list-header .btn {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: var(--color-white);
+        transition: all var(--transition-base);
+    }
+    
+    .chat-list-header .btn:hover {
+        background: rgba(255,255,255,0.3);
+        transform: translateY(-2px);
+    }
+    
+    .conversation-list {
+        background: var(--color-white);
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+        max-height: calc(100vh - 300px);
+        overflow-y: auto;
+    }
+    
+    .conversation-item {
+        padding: var(--spacing-lg);
+        border-bottom: 1px solid var(--color-gray-200);
+        cursor: pointer;
+        transition: all var(--transition-base);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .conversation-item:last-child {
+        border-bottom: none;
+    }
+    
+    .conversation-item:hover {
+        background: var(--color-gray-50);
+        transform: translateX(4px);
+        box-shadow: inset 3px 0 0 var(--color-primary);
+    }
+    
+    .conversation-info {
+        flex: 1;
+    }
+    
+    .conversation-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .conversation-title {
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-gray-900);
+        margin: 0;
+    }
+    
+    .conversation-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        background: var(--color-danger);
+        color: var(--color-white);
+        margin-left: var(--spacing-sm);
+    }
+    
+    .conversation-badge.closed {
+        background: var(--color-gray-400);
+    }
+    
+    .conversation-preview {
+        font-size: var(--font-size-sm);
+        color: var(--color-gray-600);
+        margin: 0;
+        display: flex;
+        gap: var(--spacing-sm);
+        max-width: 500px;
+    }
+    
+    .conversation-preview .sender {
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-primary);
+    }
+    
+    .conversation-preview .text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+    }
+    
+    .conversation-timestamp {
+        font-size: var(--font-size-xs);
+        color: var(--color-gray-500);
+        text-align: right;
+        white-space: nowrap;
+        margin-left: var(--spacing-lg);
+    }
+    
+    .unread-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--color-danger);
+        color: var(--color-white);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-bold);
+        margin-left: var(--spacing-md);
+    }
+    
+    .empty-state {
+        padding: 3rem 2rem;
+        text-align: center;
+        color: var(--color-gray-600);
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--color-gray-300);
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .empty-state h4 {
+        color: var(--color-gray-700);
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .empty-state .btn {
+        margin-top: var(--spacing-lg);
+    }
+    
+    @media (max-width: 768px) {
+        .conversation-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+        }
+        
+        .conversation-timestamp {
+            text-align: left;
+            margin-left: 0;
+        }
+        
+        .conversation-preview {
+            max-width: 100%;
+        }
+        
+        .chat-list-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
-                    <h5 class="mb-0">
-                        <i class="bi bi-chat-dots me-2"></i>
-                        {% if user.is_staff %}Admin Messages{% else %}My Messages{% endif %}
-                    </h5>
-                    {% if not user.is_staff %}
-                        <a href="{% url 'start_chat' %}" class="btn btn-light btn-sm">
-                            <i class="bi bi-plus-circle me-2"></i>New Chat
-                        </a>
-                    {% endif %}
-                </div>
-                <div class="card-body p-0">
-                    {% if chats %}
-                        <div class="list-group list-group-flush">
-                            {% for chat in chats %}
-                                {% unread_messages_count user chat as unread %}
-                                <a href="{% url 'chat_detail' chat.id %}" class="list-group-item list-group-item-action chat-card">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex align-items-center mb-1">
-                                                <h6 class="mb-0">
-                                                    {% if user.is_staff %}
-                                                        {{ chat.user.username }}
-                                                        {% if not chat.is_active %}
-                                                            <span class="badge bg-secondary chat-badge ms-2">Closed</span>
-                                                        {% endif %}
-                                                    {% else %}
-                                                        Support Chat
-                                                    {% endif %}
-                                                </h6>
-                                                {% if unread > 0 %}
-                                                    <span class="badge bg-danger rounded-pill chat-badge ms-2">{{ unread }}</span>
-                                                {% endif %}
-                                            </div>
-                                            {% with last_message=chat.get_last_message %}
-                                                {% if last_message %}
-                                                    <p class="chat-preview mb-0">
-                                                        <span class="{% if last_message.sender == user %}text-primary{% endif %}">
-                                                            {% if last_message.sender == user %}You:{% else %}{{ last_message.sender.username }}:{% endif %}
-                                                        </span>
-                                                        {{ last_message.content|truncatechars:50 }}
-                                                    </p>
-                                                {% endif %}
-                                            {% endwith %}
-                                        </div>
-                                    </div>
-                                </a>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="text-center py-5">
-                            <i class="bi bi-chat-dots display-1 text-muted mb-4"></i>
-                            <h4 class="text-muted">No messages yet</h4>
-                            {% if not user.is_staff %}
-                                <a href="{% url 'start_chat' %}" class="btn btn-primary mt-3">
-                                    <i class="bi bi-plus-circle me-2"></i>Start a New Chat
-                                </a>
+<div class="chat-list-page">
+    <div class="chat-list-container">
+        <div class="chat-list-header">
+            <h3>
+                <i class="bi bi-chat-dots"></i>
+                {% if user.is_staff %}
+                    <span>Messages Inbox</span>
+                {% else %}
+                    <span>My Messages</span>
+                {% endif %}
+            </h3>
+            {% if not user.is_staff %}
+                <a href="{% url 'start_chat' %}" class="btn btn-sm">
+                    <i class="bi bi-plus-circle me-2"></i>New Chat
+                </a>
+            {% endif %}
+        </div>
+        
+        {% if chats %}
+        <div class="conversation-list">
+            {% for chat in chats %}
+                {% unread_messages_count user chat as unread %}
+                <a href="{% url 'chat_detail' chat.id %}" class="conversation-item">
+                    <div class="conversation-info">
+                        <div class="conversation-header">
+                            <h6 class="conversation-title">
+                                {% if user.is_staff %}
+                                    {{ chat.user.get_full_name|default:chat.user.username }}
+                                {% else %}
+                                    {{ chat.subject }}
+                                {% endif %}
+                            </h6>
+                            {% if not chat.is_active %}
+                                <span class="conversation-badge closed">Closed</span>
                             {% endif %}
                         </div>
+                        {% with last_message=chat.get_last_message %}
+                            {% if last_message %}
+                            <div class="conversation-preview">
+                                <span class="sender">
+                                    {% if last_message.sender == user %}You{% else %}{{ last_message.sender.username|truncatechars:15 }}{% endif %}:
+                                </span>
+                                <span class="text">{{ last_message.content|truncatechars:50 }}</span>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                        {% if chat.last_message_at %}
+                        <div class="conversation-timestamp">
+                            {{ chat.last_message_at|date:"M d" }}
+                        </div>
+                        {% endif %}
+                        {% if unread > 0 %}
+                        <div class="unread-count">
+                            {{ unread }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card border-0 shadow-sm">
+            <div class="empty-state">
+                <i class="bi bi-chat-dots"></i>
+                <h4>No messages yet</h4>
+                <p class="text-muted">
+                    {% if user.is_staff %}
+                        Conversations will appear here when clients contact you
+                    {% else %}
+                        Start a conversation with the support team to get help
                     {% endif %}
-                </div>
+                </p>
+                {% if not user.is_staff %}
+                    <a href="{% url 'start_chat' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Start a New Chat
+                    </a>
+                {% endif %}
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 

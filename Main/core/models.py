@@ -276,16 +276,19 @@ class Wishlist(models.Model):
 
 class Chat(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chats')
+    admin = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='admin_chats', help_text="Admin assigned to this chat")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     last_message_at = models.DateTimeField(auto_now_add=True)
+    subject = models.CharField(max_length=200, blank=True, default="Support Chat")
     
     class Meta:
         ordering = ['-last_message_at']
         indexes = [
             models.Index(fields=['-last_message_at']),
             models.Index(fields=['user', '-last_message_at']),
+            models.Index(fields=['admin', '-last_message_at']),
         ]
 
     def get_last_message(self):
@@ -296,6 +299,14 @@ class Chat(models.Model):
         
     def mark_messages_read(self, user):
         self.messages.filter(is_read=False).exclude(sender=user).update(is_read=True)
+        
+    def get_other_user(self, current_user):
+        """Get the other participant in this 1:1 chat"""
+        if current_user.is_staff and self.admin_id == current_user.id:
+            return self.user
+        elif self.user_id == current_user.id:
+            return self.admin or None
+        return None
         
     def get_typing_users(self, exclude_user=None):
         """Get list of users currently typing in this chat"""
