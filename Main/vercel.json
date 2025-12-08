@@ -1,42 +1,18 @@
 {
-  "version": 2,
   "builds": [
     {
-      "src": "myproject/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb",
-        "runtime": "python3.12"
-      }
-    },
-    {
-      "src": "core/static/**",
-      "use": "@vercel/static"
+      "src": "myproject/wsgi_vercel.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/static/$1",
-      "headers": {
-        "cache-control": "max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/media/(.*)",
-      "dest": "/media/$1",
-      "headers": {
-        "cache-control": "max-age=86400"
-      }
+      "dest": "/staticfiles/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "myproject/wsgi.py"
+      "dest": "myproject/wsgi_vercel.py"
     }
-  ],
-  "env": {
-    "DJANGO_SECRET_KEY": "@django_secret_key",
-    "DJANGO_DEBUG": "False",
-    "USE_SQLITE": "False"
-  }
+  ]
 }
