@@ -13,6 +13,7 @@ from django.db.models import Q, Prefetch, Sum
 from django.views.decorators.http import require_POST
 from django.views.decorators.cache import cache_page
 from django.db import transaction
+from functools import wraps
 from .forms import SignUpForm, BookingForm
 from .models import (
     ServiceCategory, Service, StoreCategory, StoreItem, 
@@ -24,10 +25,24 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+def login_required_view(view_func):
+    """Custom decorator to require login for specific views"""
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(f'/login/?next={request.path}')
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
 # ============== HOME & LANDING ==============
 
 def home(request):
     """Home/Landing page"""
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     # Get featured items (latest 8)
     featured_items = StoreItem.objects.all()[:8]
     
@@ -126,6 +141,7 @@ def profile(request):
 
 # ============== SERVICES ==============
 
+@login_required(login_url='login')
 def all_services(request):
     """Browse all services"""
     query = request.GET.get('q', '')
@@ -152,6 +168,7 @@ def all_services(request):
     return render(request, 'services/all_services.html', context)
 
 
+@login_required(login_url='login')
 def service_detail(request, service_id):
     """Service detail page"""
     service = get_object_or_404(Service, id=service_id)
@@ -200,6 +217,7 @@ def my_bookings(request):
 
 # ============== STORE ==============
 
+@login_required(login_url='login')
 def all_store_items(request):
     """Browse all store items"""
     query = request.GET.get('q', '')
@@ -226,6 +244,7 @@ def all_store_items(request):
     return render(request, 'store/all_items.html', context)
 
 
+@login_required(login_url='login')
 def store_item_detail(request, item_id):
     """Store item detail page"""
     item = get_object_or_404(StoreItem, id=item_id)
@@ -238,6 +257,7 @@ def store_item_detail(request, item_id):
 
 # ============== SHOPPING CART ==============
 
+@login_required(login_url='login')
 def cart(request):
     """View shopping cart"""
     if not request.user.is_authenticated:
@@ -366,6 +386,7 @@ def order_history(request):
 
 # ============== CONTACT ==============
 
+@login_required(login_url='login')
 def contact(request):
     """Contact form"""
     if request.method == 'POST':
