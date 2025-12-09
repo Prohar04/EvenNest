@@ -25,7 +25,7 @@
                 <div class="card h-100 shadow-sm search-result-card">
                     {% if service.image %}
                     <div class="card-img-wrapper">
-                        <img src="{{ service.image.url }}" alt="{{ service.title }}" class="card-img-top">
+                        <img src="{{ service.image.url }}" alt="{{ service.title }}" class="card-img-top" loading="lazy">
                         <div class="card-img-overlay d-flex align-items-start justify-content-end">
                             <span class="badge bg-primary">{{ service.category.name }}</span>
                         </div>
@@ -68,7 +68,7 @@
                 <div class="card h-100 shadow-sm search-result-card">
                     {% if item.image %}
                     <div class="card-img-wrapper">
-                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img-top">
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img-top" loading="lazy">
                         <div class="card-img-overlay d-flex align-items-start justify-content-between">
                             <span class="badge bg-primary">{{ item.category.name }}</span>
                             {% if user.is_authenticated %}
