@@ -7,75 +7,28 @@ from .models import (
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 
-# Add new service categories if they don't exist
-def create_default_categories():
-    ServiceCategory.objects.get_or_create(
-        name='Caterer',
-        defaults={'description': 'Professional catering services for events'}
-    )
-    ServiceCategory.objects.get_or_create(
-        name='Card Designer',
-        defaults={'description': 'Custom card design services for all occasions'}
-    )
-
-# Add new store categories if they don't exist
-def create_default_store_categories():
-    StoreCategory.objects.get_or_create(
-        name='Decor Items',
-        defaults={'description': 'Beautiful decorative items for all occasions'}
-    )
-    StoreCategory.objects.get_or_create(
-        name='Event Accessories',
-        defaults={'description': 'Essential accessories for event planning and decoration'}
-    )
-
-class ServiceInline(admin.TabularInline):
-    model = Service
-    form = ServiceForm
-    extra = 1
+# ============== Service Models ==============
 
 @admin.register(ServiceCategory)
 class ServiceCategoryAdmin(admin.ModelAdmin):
-    form = ServiceCategoryForm
-    list_display = ('name', 'description')
+    list_display = ('name',)
     search_fields = ('name',)
-    inlines = [ServiceInline]
-
-    def get_form(self, request, obj=None, **kwargs):
-        if not ServiceCategory.objects.exists():
-            create_default_categories()
-        return super().get_form(request, obj, **kwargs)
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    form = ServiceForm
-    list_display = ('title', 'category', 'price', 'created_at', 'updated_at')
+    list_display = ('title', 'category', 'price', 'created_at')
     list_filter = ('category', 'created_at')
     search_fields = ('title', 'description')
     readonly_fields = ('created_at', 'updated_at')
-    list_per_page = 20
-
-class StoreItemInline(admin.TabularInline):
-    model = StoreItem
-    form = StoreItemForm
-    extra = 1
 
 @admin.register(StoreCategory)
 class StoreCategoryAdmin(admin.ModelAdmin):
-    form = StoreCategoryForm
-    list_display = ('name', 'description')
+    list_display = ('name',)
     search_fields = ('name',)
-    inlines = [StoreItemInline]
-
-    def get_form(self, request, obj=None, **kwargs):
-        if not StoreCategory.objects.exists():
-            create_default_store_categories()
-        return super().get_form(request, obj, **kwargs)
 
 @admin.register(StoreItem)
 class StoreItemAdmin(admin.ModelAdmin):
-    form = StoreItemForm
-    list_display = ('name', 'category', 'price', 'stock', 'created_at', 'updated_at')
+    list_display = ('name', 'category', 'price', 'stock', 'created_at')
     list_filter = ('category', 'created_at')
     search_fields = ('name', 'description')
     readonly_fields = ('created_at', 'updated_at')
