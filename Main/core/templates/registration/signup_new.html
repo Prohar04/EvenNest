@@ -1,0 +1,115 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Sign Up - EventNest{% endblock %}
+
+{% block content %}
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: var(--spacing-xl);">
+    <div style="width: 100%; max-width: 500px;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: var(--spacing-2xl);">
+            <h1 style="font-size: 2rem; margin-bottom: var(--spacing-md);">Create Your Account</h1>
+            <p style="color: var(--color-text-muted);">Join EventNest and start managing your events</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="card" style="padding: var(--spacing-2xl);">
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Username -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-person-fill"></i> Username
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="form-error">{{ form.username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-envelope-fill"></i> Email Address
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="form-error">{{ form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-card-text"></i> Full Name
+                    </label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}
+                        <div class="form-error">{{ form.full_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-telephone-fill"></i> Phone Number
+                    </label>
+                    {{ form.phone }}
+                    <p style="font-size: 0.85rem; color: var(--color-text-subtle); margin-top: var(--spacing-sm);">Format: +8801XXXXXXXXX</p>
+                    {% if form.phone.errors %}
+                        <div class="form-error">{{ form.phone.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Address -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-geo-alt-fill"></i> Address
+                    </label>
+                    {{ form.address }}
+                    {% if form.address.errors %}
+                        <div class="form-error">{{ form.address.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-lock-fill"></i> Password
+                    </label>
+                    {{ form.password1 }}
+                    <p style="font-size: 0.85rem; color: var(--color-text-subtle); margin-top: var(--spacing-sm);">Password must be at least 8 characters and contain a mix of letters and numbers</p>
+                    {% if form.password1.errors %}
+                        <div class="form-error">{{ form.password1.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-lock-fill"></i> Confirm Password
+                    </label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <div class="form-error">{{ form.password2.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: var(--spacing-lg); margin-top: var(--spacing-lg);">
+                    <i class="bi bi-person-plus-fill"></i> Create Account
+                </button>
+            </form>
+
+            <!-- Login Link -->
+            <div style="text-align: center; margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid var(--color-border);">
+                <p style="color: var(--color-text-muted);">
+                    Already have an account?
+                    <a href="{% url 'login' %}" style="color: var(--color-accent); text-decoration: none; font-weight: 600;">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}{{ service.title }} - EventNest{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: var(--spacing-3xl) var(--spacing-xl);">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-3xl); align-items: start; margin-bottom: var(--spacing-3xl);">
+        <!-- Image Section -->
+        <div>
+            <img src="{{ service.image.url }}" alt="{{ service.title }}" style="width: 100%; border-radius: var(--radius-2xl); box-shadow: var(--shadow-xl);">
+        </div>
+        
+        <!-- Content Section -->
+        <div>
+            <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <span style="display: inline-block; background: var(--color-accent); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">{{ service.category.name }}</span>
+            </div>
+            
+            <h1 style="margin-bottom: var(--spacing-md);">{{ service.title }}</h1>
+            
+            <div style="font-size: 2rem; font-weight: 700; color: var(--color-accent); margin-bottom: var(--spacing-lg);">
+                ৳{{ service.price }}
+            </div>
+            
+            <p style="font-size: 1.1rem; color: var(--color-text-muted); margin-bottom: var(--spacing-2xl);">{{ service.description }}</p>
+            
+            <!-- Key Features -->
+            <div style="background: var(--color-dark); padding: var(--spacing-xl); border-radius: var(--radius-xl); margin-bottom: var(--spacing-2xl);">
+                <h4 style="margin-bottom: var(--spacing-lg);">Service Details</h4>
+                <ul style="list-style: none;">
+                    <li style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                        <i class="bi bi-check-circle-fill" style="color: var(--color-success); font-size: 1.25rem;"></i>
+                        <span>Professional and certified service provider</span>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                        <i class="bi bi-check-circle-fill" style="color: var(--color-success); font-size: 1.25rem;"></i>
+                        <span>Customizable packages available</span>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                        <i class="bi bi-check-circle-fill" style="color: var(--color-success); font-size: 1.25rem;"></i>
+                        <span>Quality guarantee and warranty</span>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: var(--spacing-md);">
+                        <i class="bi bi-check-circle-fill" style="color: var(--color-success); font-size: 1.25rem;"></i>
+                        <span>24/7 customer support</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: var(--spacing-lg); flex-wrap: wrap;">
+                <form method="post" action="{% url 'create_booking' 'service' service.id %}" style="flex: 1;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: var(--spacing-lg);">
+                        <i class="bi bi-calendar-check"></i> Book Now
+                    </button>
+                </form>
+                <a href="{% url 'contact_provider' %}" class="btn btn-secondary" style="flex: 1; padding: var(--spacing-lg);">
+                    <i class="bi bi-chat-dots"></i> Contact Provider
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Services -->
+    <section>
+        <h3 style="margin-bottom: var(--spacing-lg);">Related Services</h3>
+        <div class="grid grid-3">
+            {% for related in service.category.services.all|slice:":3" %}
+                {% if related.id != service.id %}
+                <div class="card card-image">
+                    <img src="{{ related.image.url }}" alt="{{ related.title }}" loading="lazy">
+                    <div class="card-image-overlay">
+                        <h5>{{ related.title }}</h5>
+                        <p style="font-size: 1.25rem; font-weight: 700; margin: var(--spacing-md) 0;">৳{{ related.price }}</p>
+                        <a href="{% url 'service_detail' related.id %}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

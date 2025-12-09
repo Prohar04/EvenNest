@@ -1,0 +1,78 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Login - EventNest{% endblock %}
+
+{% block content %}
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: var(--spacing-xl);">
+    <div style="width: 100%; max-width: 450px;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: var(--spacing-2xl);">
+            <h1 style="font-size: 2rem; margin-bottom: var(--spacing-md);">Welcome Back</h1>
+            <p style="color: var(--color-text-muted);">Sign in to your EventNest account</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="card" style="padding: var(--spacing-2xl);">
+            {% if error %}
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--color-error); color: var(--color-error); padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-bottom: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-md);">
+                    <i class="bi bi-exclamation-circle-fill" style="font-size: 1.25rem;"></i>
+                    <span>{{ error }}</span>
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Username/Email -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-person-fill"></i> Username
+                    </label>
+                    <input type="text" name="username" class="form-input" placeholder="Enter your username" required autofocus>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-lock-fill"></i> Password
+                    </label>
+                    <input type="password" name="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="form-group" style="display: flex; align-items: center; gap: var(--spacing-md);">
+                    <input type="checkbox" id="remember" name="remember" style="cursor: pointer;">
+                    <label for="remember" style="cursor: pointer; margin: 0;">Remember me</label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: var(--spacing-lg); margin-top: var(--spacing-lg);">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div style="display: flex; align-items: center; gap: var(--spacing-lg); margin: var(--spacing-xl) 0; color: var(--color-text-muted);">
+                <div style="flex: 1; height: 1px; background: var(--color-border);"></div>
+                <span style="font-size: 0.85rem;">OR</span>
+                <div style="flex: 1; height: 1px; background: var(--color-border);"></div>
+            </div>
+
+            <!-- Links -->
+            <div style="text-align: center; padding-top: var(--spacing-lg); border-top: 1px solid var(--color-border); margin-top: var(--spacing-lg);">
+                <p style="color: var(--color-text-muted); margin-bottom: var(--spacing-md);">
+                    Don't have an account?
+                    <a href="{% url 'signup' %}" style="color: var(--color-accent); text-decoration: none; font-weight: 600;">Create one</a>
+                </p>
+                <a href="#" style="color: var(--color-text-subtle); text-decoration: none; font-size: 0.9rem;">Forgot your password?</a>
+            </div>
+        </div>
+
+        <!-- Security Note -->
+        <div style="text-align: center; margin-top: var(--spacing-xl); color: var(--color-text-subtle); font-size: 0.85rem;">
+            <i class="bi bi-shield-check"></i> Your login credentials are securely encrypted and protected.
+        </div>
+    </div>
+</div>
+{% endblock %}

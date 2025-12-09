@@ -1,0 +1,134 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}{{ item.name }} - EventNest Store{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: var(--spacing-3xl) var(--spacing-xl);">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-3xl); align-items: start; margin-bottom: var(--spacing-3xl);">
+        <!-- Image Section -->
+        <div>
+            <div style="position: relative;">
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; border-radius: var(--radius-2xl); box-shadow: var(--shadow-xl);">
+                {% if item.stock == 0 %}
+                <div style="position: absolute; top: var(--spacing-lg); right: var(--spacing-lg); background: var(--color-error); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-lg); color: white; font-weight: 700;">
+                    Out of Stock
+                </div>
+                {% elif item.stock < 5 %}
+                <div style="position: absolute; top: var(--spacing-lg); right: var(--spacing-lg); background: var(--color-warning); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-lg); color: white; font-weight: 700;">
+                    Only {{ item.stock }} left!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Content Section -->
+        <div>
+            <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <span style="display: inline-block; background: var(--color-accent); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">{{ item.category.name }}</span>
+            </div>
+            
+            <h1 style="margin-bottom: var(--spacing-md);">{{ item.name }}</h1>
+            
+            <!-- Rating and Reviews -->
+            <div style="display: flex; align-items: center; gap: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+                <div style="color: #fbbf24;">
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-half"></i>
+                </div>
+                <span style="color: var(--color-text-muted);">(24 reviews)</span>
+            </div>
+            
+            <div style="font-size: 2.5rem; font-weight: 700; color: var(--color-accent); margin-bottom: var(--spacing-lg);">
+                ৳{{ item.price }}
+            </div>
+            
+            <p style="font-size: 1.1rem; color: var(--color-text-muted); margin-bottom: var(--spacing-2xl);">{{ item.description }}</p>
+            
+            <!-- Quantity and Add to Cart -->
+            {% if item.stock > 0 %}
+            <form method="post" action="{% url 'add_to_cart' item.id %}" style="margin-bottom: var(--spacing-2xl);">
+                {% csrf_token %}
+                <div style="display: flex; gap: var(--spacing-lg); align-items: center;">
+                    <div style="display: flex; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-darker);">
+                        <button type="button" onclick="decreaseQty()" class="btn" style="background: none; border: none; color: var(--color-text); padding: var(--spacing-md) var(--spacing-lg); border-right: 1px solid var(--color-border);">
+                            <i class="bi bi-dash"></i>
+                        </button>
+                        <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ item.stock }}" class="form-input" style="border: none; background: none; width: 60px; text-align: center;">
+                        <button type="button" onclick="increaseQty()" class="btn" style="background: none; border: none; color: var(--color-text); padding: var(--spacing-md) var(--spacing-lg); border-left: 1px solid var(--color-border);">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: var(--spacing-lg);">
+                        <i class="bi bi-bag-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <button class="btn btn-secondary" disabled style="width: 100%; padding: var(--spacing-lg); opacity: 0.5;">
+                <i class="bi bi-x-circle"></i> Out of Stock
+            </button>
+            {% endif %}
+            
+            <!-- Additional Actions -->
+            <div style="display: flex; gap: var(--spacing-lg);">
+                <a href="{% url 'add_to_wishlist' item.id %}" class="btn btn-outline" style="flex: 1; padding: var(--spacing-lg);">
+                    <i class="bi bi-heart"></i> Add to Wishlist
+                </a>
+                <a href="{% url 'all_store_items' %}" class="btn btn-secondary" style="flex: 1; padding: var(--spacing-lg);">
+                    <i class="bi bi-arrow-left"></i> Continue Shopping
+                </a>
+            </div>
+            
+            <!-- Stock Info -->
+            <div style="background: var(--color-dark); padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-top: var(--spacing-2xl);">
+                <p style="margin: 0; color: var(--color-text-muted);">
+                    <i class="bi bi-box-seam" style="color: var(--color-accent);"></i>
+                    <strong>{{ item.stock }} items in stock</strong> - Order now for fast delivery
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Products -->
+    <section style="margin-top: var(--spacing-3xl);">
+        <h3 style="margin-bottom: var(--spacing-lg);">You Might Also Like</h3>
+        <div class="grid grid-3">
+            {% for related in item.category.items.all|slice:":3" %}
+                {% if related.id != item.id %}
+                <div class="card card-image">
+                    <img src="{{ related.image.url }}" alt="{{ related.name }}" loading="lazy">
+                    <div class="card-image-overlay">
+                        <h5>{{ related.name }}</h5>
+                        <p style="font-size: 1.25rem; font-weight: 700; margin: var(--spacing-md) 0;">৳{{ related.price }}</p>
+                        <a href="{% url 'store_item_detail' related.id %}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function decreaseQty() {
+    const qty = document.getElementById('quantity');
+    if (qty.value > 1) {
+        qty.value = parseInt(qty.value) - 1;
+    }
+}
+
+function increaseQty() {
+    const qty = document.getElementById('quantity');
+    const max = parseInt(qty.max);
+    if (qty.value < max) {
+        qty.value = parseInt(qty.value) + 1;
+    }
+}
+</script>
+{% endblock %}

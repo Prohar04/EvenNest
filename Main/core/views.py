@@ -71,13 +71,13 @@ def signup_view(request):
             try:
                 user = form.save()
                 login(request, user)
-                messages.success(request, 'Account created successfully! Welcome to EvenNest.')
+                messages.success(request, 'Account created successfully! Welcome to EventNest.')
                 return redirect('home')
             except Exception as e:
                 messages.error(request, 'An error occurred while creating your account. Please try again.')
     else:
         form = SignUpForm()
-    return render(request, 'registration/signup.html', {'form': form})
+    return render(request, 'registration/signup_new.html', {'form': form})
 
 def login_view(request):
     error = None
@@ -91,7 +91,7 @@ def login_view(request):
             return redirect('home')
         else:
             error = 'Invalid username or password. Please try again.'
-    return render(request, 'registration/login.html', {'error': error})
+    return render(request, 'registration/login_new.html', {'error': error})
 
 def logout_view(request):
     logout(request)
@@ -100,9 +100,9 @@ def logout_view(request):
 @cache_page(60 * 15)  # Cache for 15 minutes
 @login_required
 def home(request):
-    # Remove cache for store items to get fresh stock counts
-    services = Service.objects.select_related('category').all()[:6]
-    store_items = StoreItem.objects.select_related('category').all()[:6]
+    # Get featured services and items
+    services = Service.objects.select_related('category').all()[:4]
+    featured_items = StoreItem.objects.select_related('category').all()[:6]
     
     # Get user's wishlist items
     wishlist_items = []
@@ -113,10 +113,11 @@ def home(request):
     
     context = {
         'services': services,
-        'store_items': store_items,
+        'featured_items': featured_items,
+        'service_categories': ServiceCategory.objects.all(),
         'wishlist_items': wishlist_items,
     }
-    return render(request, 'home.html', context)
+    return render(request, 'home_new.html', context)
 
 @cache_page(60 * 15)
 def service_category_view(request, category_name):
@@ -254,17 +255,24 @@ def all_services_view(request):
     
     context = {
         'services': services,
-        'categories': categories,
+        'service_categories': categories,
         'title': 'All Services',
         'current_category': category_id,
         'current_min_price': min_price,
         'current_max_price': max_price,
         'current_sort': sort_by
     }
-    return render(request, 'services/all_services.html', context)
+    return render(request, 'services/all_services_new.html', context)
 
 def all_store_items_view(request):
     store_items = StoreItem.objects.all()
+    
+    # Search
+    search = request.GET.get('search')
+    if search:
+        store_items = store_items.filter(
+            Q(name__icontains=search) | Q(description__icontains=search)
+        )
     
     # Category filter
     category_id = request.GET.get('category')
@@ -282,7 +290,7 @@ def all_store_items_view(request):
     # Stock filter
     in_stock = request.GET.get('in_stock')
     if in_stock:
-        store_items = store_items.filter(stock__gt(0))
+        store_items = store_items.filter(stock__gt=0)
     
     # Sorting
     sort_by = request.GET.get('sort')
@@ -296,8 +304,8 @@ def all_store_items_view(request):
     categories = StoreCategory.objects.all()
     
     context = {
-        'items': store_items,
-        'categories': categories,
+        'store_items': store_items,
+        'store_categories': categories,
         'title': 'All Store Items',
         'current_category': category_id,
         'current_min_price': min_price,
@@ -305,7 +313,7 @@ def all_store_items_view(request):
         'current_sort': sort_by,
         'in_stock': in_stock
     }
-    return render(request, 'store/all_items.html', context)
+    return render(request, 'store/all_items_new.html', context)
 
 def service_detail_view(request, service_id):
     service = get_object_or_404(Service, id=service_id)
@@ -326,14 +334,14 @@ def service_detail_view(request, service_id):
         'service': service,
         'service_type': service_type
     }
-    return render(request, 'services/service_detail.html', context)
+    return render(request, 'services/service_detail_new.html', context)
 
 def store_item_detail_view(request, item_id):
     item = get_object_or_404(StoreItem, id=item_id)
     context = {
         'item': item
     }
-    return render(request, 'store/item_detail.html', context)
+    return render(request, 'store/item_detail_new.html', context)
 
 @require_POST
 @login_required
@@ -442,7 +450,7 @@ def update_cart(request, item_id):
 @login_required
 def cart_detail(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
-    return render(request, 'store/cart.html', {'cart': cart})
+    return render(request, 'store/cart_new.html', {'cart': cart})
 
 @login_required
 def checkout(request):

@@ -1,0 +1,164 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}EventNest - Discover, Create, and Manage Events{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Discover, Create, and Manage Events Effortlessly</h1>
+        <p class="lead">EventNest is your professional platform for professional event planning, booking, and management. From corporate conferences to intimate gatherings.</p>
+        <div class="hero-actions">
+            <a href="{% url 'all_services' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-search"></i> Browse Services
+            </a>
+            <a href="{% url 'all_store_items' %}" class="btn btn-secondary btn-lg">
+                <i class="bi bi-bag"></i> Shop Now
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Services Showcase Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Premium Services</h2>
+            <p class="lead">Everything you need to create unforgettable events</p>
+        </div>
+        
+        <div class="grid grid-4">
+            <!-- Service Card 1 -->
+            <div class="card card-image">
+                <img src="{% static 'images/services/corporate_event.jpg' %}" alt="Corporate Events" loading="lazy">
+                <div class="card-image-overlay">
+                    <h3>Corporate Events</h3>
+                    <p>Professional conferences, seminars, and team gatherings</p>
+                    <a href="{% url 'service_category' 'Event Management' %}" class="btn btn-primary btn-sm" style="margin-top: var(--spacing-md);">Explore</a>
+                </div>
+            </div>
+            
+            <!-- Service Card 2 -->
+            <div class="card card-image">
+                <img src="{% static 'images/services/wedding_planning.jpg' %}" alt="Wedding Planning" loading="lazy">
+                <div class="card-image-overlay">
+                    <h3>Wedding Planning</h3>
+                    <p>Complete wedding management from planning to execution</p>
+                    <a href="{% url 'service_category' 'Event Management' %}" class="btn btn-primary btn-sm" style="margin-top: var(--spacing-md);">Explore</a>
+                </div>
+            </div>
+            
+            <!-- Service Card 3 -->
+            <div class="card card-image">
+                <img src="{% static 'images/services/photography_wedding.jpg' %}" alt="Professional Photography" loading="lazy">
+                <div class="card-image-overlay">
+                    <h3>Photography</h3>
+                    <p>Professional photographers for all your important moments</p>
+                    <a href="{% url 'service_category' 'Photography' %}" class="btn btn-primary btn-sm" style="margin-top: var(--spacing-md);">Explore</a>
+                </div>
+            </div>
+            
+            <!-- Service Card 4 -->
+            <div class="card card-image">
+                <img src="{% static 'images/services/catering_wedding.jpg' %}" alt="Catering Services" loading="lazy">
+                <div class="card-image-overlay">
+                    <h3>Catering</h3>
+                    <p>Delicious cuisine for events of all sizes</p>
+                    <a href="{% url 'service_category' 'Catering' %}" class="btn btn-primary btn-sm" style="margin-top: var(--spacing-md);">Explore</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Use EventNest Section -->
+<section class="section" style="background: var(--color-dark); margin: var(--spacing-3xl) 0;">
+    <div class="container">
+        <div class="section-header">
+            <h2>Why Choose EventNest?</h2>
+            <p class="lead">Your complete event management solution</p>
+        </div>
+        
+        <div class="grid grid-4">
+            <div class="card">
+                <div style="font-size: 3rem; margin-bottom: var(--spacing-lg); text-align: center;">
+                    <i class="bi bi-shield-check" style="color: var(--color-accent);"></i>
+                </div>
+                <h4 style="text-align: center;">Trusted Platform</h4>
+                <p style="text-align: center;">Thousands of successful events managed with confidence and reliability</p>
+            </div>
+            
+            <div class="card">
+                <div style="font-size: 3rem; margin-bottom: var(--spacing-lg); text-align: center;">
+                    <i class="bi bi-person-check" style="color: var(--color-accent);"></i>
+                </div>
+                <h4 style="text-align: center;">Professional Services</h4>
+                <p style="text-align: center;">Vetted and certified service providers for premium quality</p>
+            </div>
+            
+            <div class="card">
+                <div style="font-size: 3rem; margin-bottom: var(--spacing-lg); text-align: center;">
+                    <i class="bi bi-lightning-fill" style="color: var(--color-accent);"></i>
+                </div>
+                <h4 style="text-align: center;">Fast & Easy</h4>
+                <p style="text-align: center;">Intuitive interface makes event planning quick and stress-free</p>
+            </div>
+            
+            <div class="card">
+                <div style="font-size: 3rem; margin-bottom: var(--spacing-lg); text-align: center;">
+                    <i class="bi bi-telephone-fill" style="color: var(--color-accent);"></i>
+                </div>
+                <h4 style="text-align: center;">24/7 Support</h4>
+                <p style="text-align: center;">Dedicated support team always ready to help you succeed</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Store Items Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Event Essentials Store</h2>
+            <p class="lead">Everything you need to make your event memorable</p>
+        </div>
+        
+        <div class="grid grid-3">
+            {% for item in featured_items %}
+            <div class="card card-image">
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
+                <div class="card-image-overlay">
+                    <h4>{{ item.name }}</h4>
+                    <p style="font-size: 1.25rem; font-weight: 700; margin: var(--spacing-md) 0;">৳{{ item.price }}</p>
+                    <a href="{% url 'store_item_detail' item.id %}" class="btn btn-primary btn-sm">View Details</a>
+                </div>
+            </div>
+            {% empty %}
+            <p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted);">No items available</p>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: var(--spacing-2xl);">
+            <a href="{% url 'all_store_items' %}" class="btn btn-primary">View All Store Items</a>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="section" style="background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%); margin: var(--spacing-3xl) 0 0 0;">
+    <div class="container" style="text-align: center;">
+        <h2 style="color: white;">Ready to Create Your Perfect Event?</h2>
+        <p class="lead" style="color: rgba(255, 255, 255, 0.9); margin-bottom: var(--spacing-2xl);">Join thousands of satisfied customers who've made their events unforgettable</p>
+        
+        <div class="hero-actions">
+            <a href="{% url 'all_services' %}" class="btn" style="background: white; color: var(--color-accent); font-weight: 700;">
+                <i class="bi bi-search"></i> Browse Services
+            </a>
+            <a href="{% url 'all_store_items' %}" class="btn btn-outline" style="border-color: white; color: white;">
+                <i class="bi bi-bag"></i> Start Shopping
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% load static %}
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <!-- About -->
+            <div class="footer-section">
+                <h4 style="display: flex; align-items: center; gap: var(--spacing-md);">
+                    <i class="bi bi-calendar-event" style="font-size: 1.5rem; color: var(--color-accent);"></i>
+                    EventNest
+                </h4>
+                <p style="color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">Your professional platform for planning, booking, and managing events effortlessly.</p>
+                <div style="display: flex; gap: var(--spacing-md);">
+                    <a href="#" style="color: var(--color-accent); font-size: 1.25rem;"><i class="bi bi-facebook"></i></a>
+                    <a href="#" style="color: var(--color-accent); font-size: 1.25rem;"><i class="bi bi-twitter"></i></a>
+                    <a href="#" style="color: var(--color-accent); font-size: 1.25rem;"><i class="bi bi-instagram"></i></a>
+                    <a href="#" style="color: var(--color-accent); font-size: 1.25rem;"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'all_services' %}">Services</a></li>
+                    <li><a href="{% url 'all_store_items' %}">Store</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'booking_list' %}">My Bookings</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Services -->
+            <div class="footer-section">
+                <h4>Services</h4>
+                <ul class="footer-links">
+                    <li><a href="{% url 'service_category' 'Event Management' %}">Event Management</a></li>
+                    <li><a href="{% url 'service_category' 'Photography' %}">Photography</a></li>
+                    <li><a href="{% url 'service_category' 'Catering' %}">Catering</a></li>
+                    <li><a href="{% url 'service_category' 'Printing Service' %}">Printing Services</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact & Support -->
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="{% url 'contact_provider' %}">Contact Us</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bottom -->
+        <div class="footer-bottom">
+            <p>&copy; 2024 EventNest. All rights reserved. | Empowering your events with professional solutions.</p>
+        </div>
+    </div>
+</footer>

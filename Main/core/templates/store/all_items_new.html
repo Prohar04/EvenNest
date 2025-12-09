@@ -1,0 +1,82 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Store - EventNest{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="hero" style="padding: var(--spacing-2xl) var(--spacing-xl);">
+    <div class="hero-content">
+        <h1>Event Essentials Store</h1>
+        <p class="lead">Everything you need to make your event memorable and beautiful</p>
+    </div>
+</section>
+
+<!-- Store Content -->
+<section class="section">
+    <div class="container">
+        <!-- Filter and Search -->
+        <div style="background: var(--color-dark); padding: var(--spacing-xl); border-radius: var(--radius-xl); margin-bottom: var(--spacing-2xl);">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                <div>
+                    <form method="get" action="{% url 'all_store_items' %}" style="display: flex; gap: var(--spacing-md);">
+                        <input type="text" name="search" placeholder="Search items..." class="form-input" value="{{ request.GET.search|default:'' }}" style="flex: 1;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+                
+                <div>
+                    <select onchange="filterByCategory(this.value)" class="form-select">
+                        <option value="">All Categories</option>
+                        {% for category in store_categories %}
+                        <option value="{% url 'store_category' category.name %}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Grid -->
+        <div class="grid grid-3">
+            {% for item in store_items %}
+            <div class="card card-image">
+                <div style="position: relative; display: inline-block; width: 100%;">
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
+                    {% if item.stock == 0 %}
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; border-radius: var(--radius-xl);">
+                        <span style="color: var(--color-error); font-weight: 700;">Out of Stock</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-image-overlay">
+                    <span style="display: inline-block; background: var(--color-accent); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; margin-bottom: var(--spacing-md);">{{ item.category.name }}</span>
+                    <h4>{{ item.name }}</h4>
+                    <p style="font-size: 0.9rem;">{{ item.description|truncatewords:15 }}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-md);">
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-accent);">৳{{ item.price }}</div>
+                            <div style="font-size: 0.85rem; color: var(--color-text-muted);">Stock: {{ item.stock }}</div>
+                        </div>
+                        <a href="{% url 'store_item_detail' item.id %}" class="btn btn-primary btn-sm">View</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: var(--spacing-3xl) 0;">No items found</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterByCategory(url) {
+    if (url) {
+        window.location.href = url;
+    }
+}
+</script>
+{% endblock %}
