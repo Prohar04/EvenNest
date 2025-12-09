@@ -1,27 +1,43 @@
-# Django Project
+# EventNest - Event Management Platform
 
-This is a Django web application project.
+A professional Django-based event management and e-commerce platform.
 
-## Setup
+## Features
 
-1. Ensure you have Python installed
-2. Activate the virtual environment:
-   ```
-   .\venv\Scripts\activate
-   ```
-3. Run migrations:
-   ```
-   python manage.py migrate
-   ```
-4. Start the development server:
-   ```
-   python manage.py runserver
-   ```
+- 🎉 **Event Management Services** - Wedding, Corporate, Birthday planning
+- 📸 **Photography Services** - Professional photography packages
+- 🍽️ **Catering Services** - Multi-cuisine catering options
+- 🖨️ **Printing Services** - Cards, banners, invitations
+- 🛒 **Store** - Event supplies and decorations
+- 💬 **Real-time Chat** - Customer support system
 
-The application will be available at `http://127.0.0.1:8000/`
+## Quick Start
 
-## Project Structure
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-- `core/` - Main application directory
-- `myproject/` - Project configuration directory
-- `manage.py` - Django's command-line utility for administrative tasks
+# Run migrations
+python manage.py migrate
+
+# Create superuser
+python manage.py createsuperuser
+
+# Start server
+python manage.py runserver
+```
+
+## Deployment
+
+Ready for Vercel deployment with MySQL database support.
+
+## Tech Stack
+
+- Django 5.2
+- Bootstrap 5
+- SQLite (dev) / MySQL (production)
+- Django Channels (WebSocket)
+
+## License
+
+MIT License
