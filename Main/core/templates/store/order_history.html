@@ -23,7 +23,7 @@
                     </div>
                     <div style="text-align: right;">
                         <p style="color: var(--text-tertiary); margin-bottom: var(--spacing-sm);">Total</p>
-                        <p style="font-weight: 600; font-size: 1.3rem; color: var(--primary);">${{ order.total_amount }}</p>
+                        <p style="font-weight: 600; font-size: 1.3rem; color: var(--primary);">৳{{ order.total_amount|floatformat:0 }}</p>
                     </div>
                 </div>
 
@@ -37,7 +37,7 @@
                             <h4>{{ item.item.name }}</h4>
                             <p style="color: var(--text-tertiary);">Qty: {{ item.quantity }}</p>
                         </div>
-                        <p style="font-weight: 600; color: var(--primary);">${{ item.get_total }}</p>
+                        <p style="font-weight: 600; color: var(--primary);">৳{{ item.get_total|floatformat:0 }}</p>
                     </div>
                     {% endfor %}
                 </div>

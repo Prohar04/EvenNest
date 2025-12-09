@@ -18,7 +18,7 @@ from .forms import SignUpForm, BookingForm
 from .models import (
     ServiceCategory, Service, StoreCategory, StoreItem, 
     Cart, CartItem, Order, OrderItem, Wishlist,
-    UserProfile, Booking, Contact
+    UserProfile, Booking, Contact, Notification
 )
 from django.utils import timezone
 import logging
@@ -78,6 +78,15 @@ def signup_view(request):
             # Create cart
             Cart.objects.create(user=user)
             
+            # Create welcome notification
+            Notification.objects.create(
+                user=user,
+                notification_type='welcome',
+                title='Welcome to EventNest! 🎉',
+                message='Thank you for joining EventNest! Browse our services to plan your perfect event. We offer wedding planning, photography, catering, and much more.',
+                link='/services/'
+            )
+            
             messages.success(request, 'Account created successfully! Please log in.')
             return redirect('login')
         else:
@@ -118,14 +127,21 @@ def login_view(request):
 
 
 def logout_view(request):
-    """User logout"""
+    """
+    User logout - Handles both GET and POST requests
+    POST: Preferred method, logs out user immediately
+    GET: Shows confirmation page or logs out directly (for user convenience)
+    """
     if request.method == 'POST':
         logout(request)
         messages.success(request, 'You have been logged out successfully.')
-        return redirect('home')
+        return redirect('login')
     else:
-        # Redirect to home if someone tries to access logout via GET
-        return redirect('home')
+        # For GET requests, log out directly (more user-friendly)
+        # This is acceptable for logout since it's not a sensitive action
+        logout(request)
+        messages.success(request, 'You have been logged out successfully.')
+        return redirect('login')
 
 
 # ============== USER PROFILE ==============
@@ -372,6 +388,15 @@ def checkout(request):
         # Clear cart
         cart_items.delete()
         
+        # Create order notification
+        Notification.objects.create(
+            user=request.user,
+            notification_type='order',
+            title='Order Placed Successfully! 🛒',
+            message=f'Your order #{order.id} for ৳{int(total)} has been placed. We will process it soon and update you on delivery.',
+            link='/orders/'
+        )
+        
         messages.success(request, 'Order placed successfully! Thank you for your purchase.')
         return redirect('order_history')
     
@@ -489,6 +514,75 @@ def api_items_search(request):
     )[:10].values('id', 'name', 'price')
     
     return JsonResponse(list(items), safe=False)
+
+
+# ============== NOTIFICATIONS ==============
+
+@login_required(login_url='login')
+def notifications(request):
+    """View all notifications"""
+    user_notifications = Notification.objects.filter(user=request.user).order_by('-created_at')[:50]
+    
+    context = {
+        'notifications': user_notifications,
+    }
+    return render(request, 'core/notifications.html', context)
+
+
+@login_required(login_url='login')
+def api_notifications(request):
+    """Get notifications via AJAX for navbar dropdown"""
+    user_notifications = Notification.objects.filter(user=request.user).order_by('-created_at')[:10]
+    unread_count = Notification.objects.filter(user=request.user, is_read=False).count()
+    
+    notifications_list = []
+    for n in user_notifications:
+        notifications_list.append({
+            'id': n.id,
+            'title': n.title,
+            'message': n.message[:100] + '...' if len(n.message) > 100 else n.message,
+            'type': n.notification_type,
+            'link': n.link or '',
+            'is_read': n.is_read,
+            'created_at': n.created_at.strftime('%d %b %Y, %I:%M %p'),
+        })
+    
+    return JsonResponse({
+        'notifications': notifications_list,
+        'unread_count': unread_count,
+    })
+
+
+@login_required(login_url='login')
+@require_POST
+def mark_notification_read(request, notification_id):
+    """Mark a notification as read"""
+    try:
+        notification = Notification.objects.get(id=notification_id, user=request.user)
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({'success': True})
+    except Notification.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Notification not found'}, status=404)
+
+
+@login_required(login_url='login')
+@require_POST
+def mark_all_notifications_read(request):
+    """Mark all notifications as read"""
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    return JsonResponse({'success': True})
+
+
+def create_notification(user, notification_type, title, message, link=None):
+    """Helper function to create notifications"""
+    return Notification.objects.create(
+        user=user,
+        notification_type=notification_type,
+        title=title,
+        message=message,
+        link=link
+    )
 
 
 # ============== ERROR HANDLERS ==============

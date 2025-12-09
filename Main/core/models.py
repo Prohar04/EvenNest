@@ -322,6 +322,35 @@ class Booking(models.Model):
         return None
 
 
+class Notification(models.Model):
+    """Model to store user notifications"""
+    NOTIFICATION_TYPE_CHOICES = [
+        ('booking', 'Booking Update'),
+        ('order', 'Order Update'),
+        ('promo', 'Promotion'),
+        ('system', 'System'),
+        ('welcome', 'Welcome'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPE_CHOICES, default='system')
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    link = models.CharField(max_length=255, blank=True, null=True, help_text="Optional link to related page")
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['is_read']),
+        ]
+    
+    def __str__(self):
+        return f"{self.title} - {self.user.username}"
+
+
 class Contact(models.Model):
     """Model to store contact inquiries from users"""
     CONTACT_METHOD_CHOICES = [

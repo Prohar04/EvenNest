@@ -62,6 +62,12 @@ urlpatterns = [
     # Contact
     path('contact/', views.contact, name='contact'),
     
+    # Notifications
+    path('notifications/', views.notifications, name='notifications'),
+    path('api/notifications/', views.api_notifications, name='api_notifications'),
+    path('api/notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
+    path('api/notifications/read-all/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+    
     # API endpoints
     path('api/cart-count/', views.api_cart_count, name='api_cart_count'),
     path('api/services-search/', views.api_services_search, name='api_services_search'),

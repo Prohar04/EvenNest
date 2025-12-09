@@ -96,6 +96,7 @@ def test_pages():
             ('/orders/', 'Order History', 200),
             ('/contact/', 'Contact Page', 200),
             ('/wishlist/', 'Wishlist', 200),
+            ('/notifications/', 'Notifications', 200),
         ]
         
         for url, name, expected_status in protected_urls:

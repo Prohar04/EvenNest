@@ -32,7 +32,7 @@
 
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <p style="font-weight: 600; font-size: 1.1rem; color: var(--primary);">
-                                    ${{ cart_item.get_total }}
+                                    ৳{{ cart_item.get_total|floatformat:0 }}
                                 </p>
                                 <a href="{% url 'remove_from_cart' cart_item.id %}" class="btn btn-small" style="color: var(--error); background: rgba(239, 68, 68, 0.1);">
                                     <i class="bi bi-trash"></i> Remove
@@ -51,7 +51,7 @@
                     
                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-md);">
                         <p>Subtotal</p>
-                        <p style="font-weight: 600;">${{ total }}</p>
+                        <p style="font-weight: 600;">৳{{ total|floatformat:0 }}</p>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-md);">
                         <p>Shipping</p>
@@ -59,7 +59,7 @@
                     </div>
                     <div style="display: flex; justify-content: space-between; padding-top: var(--spacing-lg); border-top: 1px solid var(--bg-tertiary); margin-bottom: var(--spacing-xl);">
                         <p style="font-weight: 600; font-size: 1.1rem;">Total</p>
-                        <p style="font-weight: 600; font-size: 1.1rem; color: var(--primary);">${{ total }}</p>
+                        <p style="font-weight: 600; font-size: 1.1rem; color: var(--primary);">৳{{ total|floatformat:0 }}</p>
                     </div>
 
                     <a href="{% url 'checkout' %}" class="btn btn-primary" style="width: 100%; justify-content: center;">

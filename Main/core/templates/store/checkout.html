@@ -91,14 +91,14 @@
                         {% for item in cart_items %}
                         <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
                             <p style="color: var(--text-secondary);">{{ item.item.name }} x{{ item.quantity }}</p>
-                            <p style="font-weight: 600;">${{ item.get_total }}</p>
+                            <p style="font-weight: 600;">৳{{ item.get_total|floatformat:0 }}</p>
                         </div>
                         {% endfor %}
                     </div>
 
                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-md);">
                         <p>Subtotal</p>
-                        <p style="font-weight: 600;">${{ total }}</p>
+                        <p style="font-weight: 600;">৳{{ total|floatformat:0 }}</p>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-xl);">
                         <p>Shipping</p>
@@ -107,7 +107,7 @@
 
                     <div style="display: flex; justify-content: space-between; padding-top: var(--spacing-lg); border-top: 2px solid var(--primary);">
                         <p style="font-weight: 600; font-size: 1.1rem;">Total</p>
-                        <p style="font-weight: 600; font-size: 1.1rem; color: var(--primary);">${{ total }}</p>
+                        <p style="font-weight: 600; font-size: 1.1rem; color: var(--primary);">৳{{ total|floatformat:0 }}</p>
                     </div>
                 </div>
             </div>

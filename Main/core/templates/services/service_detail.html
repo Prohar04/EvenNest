@@ -27,7 +27,7 @@
                 
                 <div class="flex" style="gap: var(--spacing-lg); margin: var(--spacing-xl) 0; align-items: center;">
                     <div>
-                        <div style="font-size: 2rem; color: var(--primary); font-weight: 700;">${{ service.price }}</div>
+                        <div style="font-size: 2rem; color: var(--primary); font-weight: 700;">৳{{ service.price|floatformat:0 }}</div>
                         <p style="color: var(--text-tertiary);">Starting from</p>
                     </div>
                     <div style="border-left: 2px solid var(--bg-tertiary); padding-left: var(--spacing-lg);">

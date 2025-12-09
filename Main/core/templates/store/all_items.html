@@ -58,7 +58,7 @@
                         {% endif %}
                     </div>
                     <div class="card-footer">
-                        <div class="card-price">${{ item.price }}</div>
+                        <div class="card-price">৳{{ item.price|floatformat:0 }}</div>
                         <a href="{% url 'store_item_detail' item.id %}" class="btn btn-primary btn-small">
                             View
                         </a>

@@ -26,9 +26,12 @@
                         <a href="{% url 'order_history' %}" class="btn btn-ghost" style="width: 100%; justify-content: flex-start; margin-top: var(--spacing-sm);">
                             <i class="bi bi-receipt"></i> My Orders
                         </a>
-                        <a href="{% url 'logout' %}" class="btn btn-ghost" style="width: 100%; justify-content: flex-start; margin-top: var(--spacing-sm); color: var(--error);">
-                            <i class="bi bi-box-arrow-right"></i> Logout
-                        </a>
+                        <form method="post" action="{% url 'logout' %}" style="margin-top: var(--spacing-sm);">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-ghost" style="width: 100%; justify-content: flex-start; color: var(--error); border: none; background: transparent;">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -59,12 +62,12 @@
 
                         <div class="form-group">
                             <label>Phone</label>
-                            <input type="tel" name="phone" value="{{ request.user.profile.phone }}" placeholder="+1 (555) 000-0000">
+                            <input type="tel" name="phone" value="{{ request.user.profile.phone }}" placeholder="+880 1XXX-XXXXXX">
                         </div>
 
                         <div class="form-group">
                             <label>Address</label>
-                            <textarea name="address" rows="3" placeholder="123 Main Street, City, State 12345">{{ request.user.profile.address }}</textarea>
+                            <textarea name="address" rows="3" placeholder="House 42, Road 11, Banani, Dhaka 1213">{{ request.user.profile.address }}</textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary">

@@ -42,7 +42,7 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <div class="card-price">${{ service.price }}</div>
+                        <div class="card-price">৳{{ service.price|floatformat:0 }}</div>
                         <a href="{% url 'service_detail' service.id %}" class="btn btn-primary btn-small">
                             View Details
                         </a>
