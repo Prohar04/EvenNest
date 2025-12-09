@@ -21,41 +21,46 @@ from django.conf.urls.static import static
 from core import views
 
 urlpatterns = [
+    # Admin
     path('admin/', admin.site.urls),
+    
+    # Home
     path('', views.home, name='home'),
+    
+    # Auth URLs
     path('signup/', views.signup_view, name='signup'),
-    path('profile/', views.personal_info, name='profile'),
-    path('logout/', views.logout_view, name='logout'),
     path('login/', views.login_view, name='login'),
-    path('accounts/', include('django.contrib.auth.urls')),  # This includes additional auth URLs
-    path('services/', views.all_services_view, name='all_services'),  # New URL for all services
-    path('services/<str:category_name>/', views.service_category_view, name='service_category'),
-    path('services/detail/<int:service_id>/', views.service_detail_view, name='service_detail'),  # New URL for service detail
-    path('store/', views.all_store_items_view, name='all_store_items'),  # New URL for all store items
-    path('store/<str:category_name>/', views.store_category_view, name='store_category'),
-    path('store/detail/<int:item_id>/', views.store_item_detail_view, name='store_item_detail'),  # New URL for store item detail
-    path('personal-info/', views.personal_info, name='personal_info'),
-    path('search/', views.search, name='search'),  # Add search URL
-
-    # Cart URLs
+    path('logout/', views.logout_view, name='logout'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    
+    # User Profile & Bookings
+    path('profile/', views.profile, name='profile'),
+    path('my-bookings/', views.my_bookings, name='my_bookings'),
+    
+    # Services
+    path('services/', views.all_services, name='all_services'),
+    path('services/<int:service_id>/', views.service_detail, name='service_detail'),
+    path('services/<int:service_id>/quote/', views.request_service_quote, name='request_quote'),
+    
+    # Store
+    path('store/', views.all_store_items, name='all_store_items'),
+    path('store/<int:item_id>/', views.store_item_detail, name='store_item_detail'),
+    
+    # Shopping Cart & Checkout
+    path('cart/', views.cart, name='cart'),
     path('cart/add/<int:item_id>/', views.add_to_cart, name='add_to_cart'),
-    path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
-    path('cart/update/<int:item_id>/', views.update_cart, name='update_cart'),
-    path('cart/', views.cart_detail, name='cart_detail'),
+    path('cart/update/<int:cart_item_id>/', views.update_cart, name='update_cart'),
+    path('cart/remove/<int:cart_item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('checkout/', views.checkout, name='checkout'),
     path('orders/', views.order_history, name='order_history'),
-
-    # Wishlist URLs
-    path('wishlist/', views.wishlist_view, name='wishlist'),
-    path('wishlist/add/<int:item_id>/', views.add_to_wishlist, name='add_to_wishlist'),
-
-    # Booking URLs
-    path('bookings/', views.booking_list, name='booking_list'),
-    path('book/<str:service_type>/<int:service_id>/', views.create_booking, name='create_booking'),
     
-    # Contact URLs
-    path('contact-provider/', views.contact_provider, name='contact_provider'),
-    path('contact-success/', views.contact_success, name='contact_success'),
+    # Contact
+    path('contact/', views.contact, name='contact'),
+    
+    # API endpoints
+    path('api/cart-count/', views.api_cart_count, name='api_cart_count'),
+    path('api/services-search/', views.api_services_search, name='api_services_search'),
+    path('api/items-search/', views.api_items_search, name='api_items_search'),
 ]
 
 if settings.DEBUG:

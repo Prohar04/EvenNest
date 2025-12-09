@@ -1,6 +1,9 @@
 from django.contrib import admin
-from .models import ServiceCategory, Service, StoreCategory, StoreItem, UserProfile, Cart, CartItem, Order, OrderItem, Wishlist, Booking
-from .forms import ServiceForm, ServiceCategoryForm, StoreItemForm, StoreCategoryForm
+from .models import (
+    ServiceCategory, Service, StoreCategory, StoreItem, UserProfile, 
+    Cart, CartItem, Order, OrderItem, Wishlist, Booking, Contact,
+    EventManagement, Photography, Catering, PrintingService
+)
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 
@@ -125,3 +128,57 @@ class BookingAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'requirements', 'service_id')
     readonly_fields = ('created_at', 'updated_at')
     ordering = ('-created_at',)
+
+
+# ============== Contact Model ==============
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'email', 'subject', 'service_type', 'status', 'created_at')
+    list_filter = ('service_type', 'status', 'created_at')
+    search_fields = ('full_name', 'email', 'subject')
+    readonly_fields = ('created_at', 'updated_at')
+    actions = ['mark_as_read', 'mark_as_responded']
+    date_hierarchy = 'created_at'
+    
+    def mark_as_read(self, request, queryset):
+        queryset.update(status='read')
+    mark_as_read.short_description = 'Mark selected as read'
+    
+    def mark_as_responded(self, request, queryset):
+        queryset.update(status='responded')
+    mark_as_responded.short_description = 'Mark selected as responded'
+
+
+# ============== Service-Specific Models ==============
+
+@admin.register(EventManagement)
+class EventManagementAdmin(admin.ModelAdmin):
+    list_display = ('title', 'event_type', 'price', 'capacity')
+    list_filter = ('event_type', 'created_at')
+    search_fields = ('title',)
+
+@admin.register(Photography)
+class PhotographyAdmin(admin.ModelAdmin):
+    list_display = ('title', 'shoot_type', 'price', 'duration')
+    list_filter = ('shoot_type',)
+    search_fields = ('title',)
+
+@admin.register(Catering)
+class CateringAdmin(admin.ModelAdmin):
+    list_display = ('title', 'cuisine_type', 'price', 'min_order_quantity')
+    list_filter = ('cuisine_type',)
+    search_fields = ('title',)
+
+@admin.register(PrintingService)
+class PrintingServiceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'print_type', 'price', 'min_order_quantity')
+    list_filter = ('print_type',)
+    search_fields = ('title',)
+
+
+# ============== Customize Admin Site ==============
+
+admin.site.site_header = "EventNest Administration"
+admin.site.site_title = "EventNest Admin"
+admin.site.index_title = "Welcome to EventNest Admin Portal"
