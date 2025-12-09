@@ -54,6 +54,11 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('orders/', views.order_history, name='order_history'),
     
+    # Wishlist
+    path('wishlist/', views.wishlist, name='wishlist'),
+    path('wishlist/add/<str:content_type>/<int:item_id>/', views.add_to_wishlist, name='add_to_wishlist'),
+    path('wishlist/remove/<int:wishlist_item_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
+    
     # Contact
     path('contact/', views.contact, name='contact'),
     

@@ -395,6 +395,47 @@ def order_history(request):
     return render(request, 'store/order_history.html', context)
 
 
+# ============== WISHLIST ==============
+
+@login_required(login_url='login')
+def wishlist(request):
+    """View wishlist"""
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('service', 'item')
+    
+    context = {
+        'wishlist_items': wishlist_items,
+    }
+    return render(request, 'store/wishlist.html', context)
+
+
+@login_required(login_url='login')
+def add_to_wishlist(request, content_type, item_id):
+    """Add item to wishlist"""
+    wishlist_item, created = Wishlist.objects.get_or_create(
+        user=request.user,
+        service_id=item_id if content_type == 'service' else None,
+        item_id=item_id if content_type == 'product' else None,
+    )
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'message': 'Added to wishlist'})
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+@login_required(login_url='login')
+def remove_from_wishlist(request, wishlist_item_id):
+    """Remove from wishlist"""
+    try:
+        wishlist_item = Wishlist.objects.get(id=wishlist_item_id, user=request.user)
+        wishlist_item.delete()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': 'Removed from wishlist'})
+    except Wishlist.DoesNotExist:
+        pass
+    
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
 # ============== CONTACT ==============
 
 @login_required(login_url='login')
