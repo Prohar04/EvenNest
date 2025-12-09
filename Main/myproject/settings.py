@@ -45,6 +45,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '.vercel.app',
+    'testserver',
 ]
 
 # Add Vercel deployment URL if set

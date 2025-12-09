@@ -96,25 +96,36 @@ def login_view(request):
         return redirect('home')
     
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
         
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            messages.success(request, f'Welcome back, {user.first_name or user.username}!')
-            return redirect(request.GET.get('next', 'home'))
+        if not username or not password:
+            messages.error(request, 'Please provide both username and password.')
         else:
-            messages.error(request, 'Invalid username or password.')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Welcome back, {user.first_name or user.username}!')
+                next_url = request.GET.get('next')
+                if next_url:
+                    return redirect(next_url)
+                return redirect('home')
+            else:
+                messages.error(request, 'Invalid username or password.')
     
-    return render(request, 'registration/login.html')
+    context = {}
+    return render(request, 'registration/login.html', context)
 
 
 def logout_view(request):
     """User logout"""
-    logout(request)
-    messages.success(request, 'You have been logged out successfully.')
-    return redirect('home')
+    if request.method == 'POST':
+        logout(request)
+        messages.success(request, 'You have been logged out successfully.')
+        return redirect('home')
+    else:
+        # Redirect to home if someone tries to access logout via GET
+        return redirect('home')
 
 
 # ============== USER PROFILE ==============
