@@ -27,6 +27,9 @@ urlpatterns = [
     # Home
     path('', views.home, name='home'),
     
+    # Search
+    path('search/', views.search, name='search'),
+    
     # Auth URLs
     path('signup/', views.signup_view, name='signup'),
     path('login/', views.login_view, name='login'),

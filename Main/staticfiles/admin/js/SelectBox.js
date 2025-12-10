@@ -41,7 +41,7 @@
             }
             SelectBox.redisplay(id);
         },
-        get_hidden_node_count: function(id) {
+        get_hidden_node_count(id) {
             const cache = SelectBox.cache[id] || [];
             return cache.filter(node => node.displayed === 0).length;
         },

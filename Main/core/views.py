@@ -53,6 +53,33 @@ def home(request):
     return render(request, 'home.html', context)
 
 
+def search(request):
+    """Search services and products"""
+    query = request.GET.get('q', '').strip()
+    
+    services = Service.objects.none()
+    store_items = StoreItem.objects.none()
+    
+    if query:
+        services = Service.objects.filter(
+            Q(title__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(category__name__icontains=query)
+        )
+        store_items = StoreItem.objects.filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(category__name__icontains=query)
+        )
+    
+    context = {
+        'query': query,
+        'services': services,
+        'store_items': store_items,
+    }
+    return render(request, 'search_results.html', context)
+
+
 # ============== AUTHENTICATION ==============
 
 def signup_view(request):
@@ -425,10 +452,11 @@ def order_history(request):
 @login_required(login_url='login')
 def wishlist(request):
     """View wishlist"""
-    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('service', 'item')
+    # Get or create user's wishlist
+    user_wishlist, created = Wishlist.objects.get_or_create(user=request.user)
     
     context = {
-        'wishlist_items': wishlist_items,
+        'wishlist': user_wishlist,
     }
     return render(request, 'store/wishlist.html', context)
 
@@ -436,26 +464,34 @@ def wishlist(request):
 @login_required(login_url='login')
 def add_to_wishlist(request, content_type, item_id):
     """Add item to wishlist"""
-    wishlist_item, created = Wishlist.objects.get_or_create(
-        user=request.user,
-        service_id=item_id if content_type == 'service' else None,
-        item_id=item_id if content_type == 'product' else None,
-    )
+    # Get or create user's wishlist
+    user_wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+    
+    if content_type == 'storeitem':
+        try:
+            item = StoreItem.objects.get(id=item_id)
+            user_wishlist.items.add(item)
+            message = 'Added to wishlist'
+        except StoreItem.DoesNotExist:
+            message = 'Item not found'
+    else:
+        message = 'Invalid content type'
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({'success': True, 'message': 'Added to wishlist'})
+        return JsonResponse({'success': True, 'message': message})
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
 
 @login_required(login_url='login')
 def remove_from_wishlist(request, wishlist_item_id):
-    """Remove from wishlist"""
+    """Remove item from wishlist by item ID"""
     try:
-        wishlist_item = Wishlist.objects.get(id=wishlist_item_id, user=request.user)
-        wishlist_item.delete()
+        user_wishlist = Wishlist.objects.get(user=request.user)
+        item = StoreItem.objects.get(id=wishlist_item_id)
+        user_wishlist.items.remove(item)
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'message': 'Removed from wishlist'})
-    except Wishlist.DoesNotExist:
+    except (Wishlist.DoesNotExist, StoreItem.DoesNotExist):
         pass
     
     return redirect(request.META.get('HTTP_REFERER', 'home'))

@@ -20,3 +20,17 @@ def get_wishlist_status(item, user):
     if user.is_authenticated:
         return user.wishlist_set.filter(items=item).exists()
     return False
+
+@register.filter
+def smart_image_url(image):
+    """Returns the correct URL for an image - handles both file uploads and external URLs"""
+    if not image:
+        return ''
+    # Check if it's an external URL
+    if hasattr(image, 'name') and image.name.startswith('http'):
+        return image.name
+    # Otherwise return the normal URL
+    try:
+        return image.url
+    except:
+        return ''

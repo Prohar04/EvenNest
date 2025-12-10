@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load cart_tags %}
 
 {% block title %}{{ category.name }} - Store{% endblock %}
 
@@ -16,7 +17,7 @@
                 {% if item.image %}
                 <div class="card-img-wrapper position-relative">
                     <a href="{% url 'store_item_detail' item.id %}" class="card-img-link">
-                        <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}" style="height: 250px; object-fit: cover;" loading="lazy" decoding="async">
+                        <img src="{{ item.image|smart_image_url }}" class="card-img-top" alt="{{ item.name }}" style="height: 250px; object-fit: cover;" loading="lazy" decoding="async">
                     </a>
                     <div class="wishlist-button position-absolute top-0 end-0 m-2">
                         <form method="post" action="{% url 'add_to_wishlist' item.id %}" class="d-inline">
