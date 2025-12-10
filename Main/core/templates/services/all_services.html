@@ -15,6 +15,18 @@
             </div>
         </div>
 
+        <!-- Categories Filter -->
+        <div class="filters">
+            <a href="{% url 'all_services' %}" class="filter-btn {% if not request.GET.category %}active{% endif %}">
+                All Categories
+            </a>
+            {% for category in categories %}
+            <a href="?category={{ category.id }}" class="filter-btn {% if request.GET.category == category.id|stringformat:'s' %}active{% endif %}">
+                {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+
         <!-- Services Grid -->
         <div class="grid grid-3">
             {% for service in services %}
