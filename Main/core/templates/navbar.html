@@ -85,11 +85,9 @@
                 <li class="nav-item d-lg-none">
                     <a class="nav-link" href="{% url 'cart_detail' %}">
                         <i class="bi bi-cart3"></i> Cart
-                        {% with cart_count=cart_item_count %}
                         {% if cart_count > 0 %}
                         <span class="badge bg-danger ms-2">{{ cart_count }}</span>
                         {% endif %}
-                        {% endwith %}
                     </a>
                 </li>
                 {% endif %}
@@ -171,13 +169,11 @@
                 <!-- Cart Button (Desktop) -->
                 <a href="{% url 'cart_detail' %}" class="cart-btn d-none d-lg-inline-flex position-relative">
                     <i class="bi bi-cart3"></i>
-                    {% with cart_count=cart_item_count %}
                     {% if cart_count > 0 %}
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge-animated">
                         {{ cart_count }}
                     </span>
                     {% endif %}
-                    {% endwith %}
                 </a>
 
                 <!-- Account Menu (Desktop) -->
