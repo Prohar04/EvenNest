@@ -264,7 +264,3 @@ This project is licensed under the MIT License.
 - Django Framework
 - Bootstrap Icons
 - All contributors and testers
-
----
-
-**Made with ❤️ in Bangladesh**
