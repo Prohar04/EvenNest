@@ -268,9 +268,10 @@ def request_service_quote(request, service_id):
             # Create notification
             Notification.objects.create(
                 user=request.user,
+                notification_type='booking',
                 title='Booking Confirmed',
-                body=f'Your booking for {service.title} on {booking_date.strftime("%B %d, %Y")} at {booking_time.strftime("%I:%M %p")} has been created.',
-                type='booking'
+                message=f'Your booking for {service.title} on {booking_date.strftime("%B %d, %Y")} at {booking_time.strftime("%I:%M %p")} has been created.',
+                link=f'/my-bookings/'
             )
             
             messages.success(request, f'Booking confirmed! Check your bookings page for details.')
