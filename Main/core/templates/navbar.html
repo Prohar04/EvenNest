@@ -85,7 +85,7 @@
                 <li class="nav-item d-lg-none">
                     <a class="nav-link position-relative" href="{% url 'cart_detail' %}" title="Shopping Cart">
                         <i class="bi bi-cart3"></i> Cart
-                        <span class="mobile-cart-badge">{{ cart_count }}</span>
+                        <span class="badge badge-danger cart-count-badge">{{ cart_count }}</span>
                     </a>
                 </li>
                 {% endif %}
@@ -167,7 +167,7 @@
                 <!-- Cart Button (Desktop) -->
                 <a href="{% url 'cart_detail' %}" class="cart-btn d-none d-lg-inline-flex position-relative" title="Shopping Cart">
                     <i class="bi bi-cart3"></i>
-                    <span class="cart-badge">{{ cart_count }}</span>
+                    <span class="badge badge-danger cart-count-badge">{{ cart_count }}</span>
                 </a>
 
                 <!-- Account Menu (Desktop) -->
@@ -274,52 +274,36 @@
         transform: translateY(-2px);
     }
 
-    /* Desktop Cart Badge - Simple and Visible */
-    .cart-btn {
-        position: relative !important;
-        display: inline-flex !important;
-        align-items: center !important;
-    }
-
-    .cart-btn .cart-badge {
+    /* Cart Count Badge - Notification Style */
+    .cart-count-badge {
         position: absolute !important;
-        top: -10px !important;
-        right: -10px !important;
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important;
-        color: white !important;
-        border-radius: 50% !important;
-        width: 28px !important;
-        height: 28px !important;
+        top: -8px !important;
+        right: -8px !important;
+        min-width: 22px !important;
+        height: 22px !important;
+        font-size: 0.75rem !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        font-size: 0.9rem !important;
-        font-weight: 800 !important;
-        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.6) !important;
-        border: 2px solid white !important;
-        z-index: 1000 !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
         line-height: 1 !important;
+        font-weight: 700 !important;
+        z-index: 1000 !important;
+        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4) !important;
+        border: 2px solid white !important;
     }
 
-    .cart-btn:hover .cart-badge {
-        transform: scale(1.25) rotate(-15deg) !important;
-        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.8) !important;
+    .cart-btn:hover .cart-count-badge {
+        transform: scale(1.2) !important;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.6) !important;
     }
 
-    /* Mobile Cart Badge */
-    .mobile-cart-badge {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important;
-        color: white !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0.4rem 0.8rem !important;
-        border-radius: 14px !important;
-        font-size: 0.85rem !important;
-        font-weight: 800 !important;
-        margin-left: 0.6rem !important;
-        box-shadow: 0 3px 12px rgba(255, 107, 107, 0.6) !important;
-        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    .nav-link .cart-count-badge {
+        margin-left: 0.3rem !important;
+        position: relative !important;
+        top: -8px !important;
+        right: auto !important;
     }
 
     @keyframes cartBadgePulse {
