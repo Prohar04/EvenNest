@@ -1,367 +1,124 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load cart_tags %}
+
+{% block title %}My Bookings - EventNest{% endblock %}
 
 {% block content %}
-<style>
-    .booking-card {
-        border: none;
-        border-radius: 12px;
-        transition: all 0.3s ease;
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    }
+<section class="section">
+    <div class="container">
+        <h1 style="margin-bottom: var(--spacing-2xl);">My Bookings</h1>
 
-    .booking-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-    }
-
-    .booking-status-timeline {
-        display: flex;
-        justify-content: space-between;
-        margin: 20px 0;
-        position: relative;
-    }
-
-    .booking-status-timeline::before {
-        content: '';
-        position: absolute;
-        top: 20px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, #e9ecef 0%, #e9ecef 100%);
-        z-index: 0;
-    }
-
-    .status-step {
-        flex: 1;
-        text-align: center;
-        position: relative;
-        z-index: 1;
-    }
-
-    .status-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #e9ecef;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 8px;
-        font-size: 18px;
-        color: #6c757d;
-        transition: all 0.3s ease;
-    }
-
-    .status-step.active .status-icon {
-        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.3);
-        transform: scale(1.2);
-        animation: statusPulse 1.5s ease-in-out infinite;
-    }
-
-    .status-step.completed .status-icon {
-        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.3);
-    }
-
-    @keyframes statusPulse {
-        0%, 100% {
-            transform: scale(1.2);
-            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.3);
-        }
-        50% {
-            transform: scale(1.35);
-            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.3);
-        }
-    }
-
-    .status-label {
-        font-size: 12px;
-        color: #6c757d;
-        font-weight: 600;
-        margin-top: 5px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .status-step.active .status-label,
-    .status-step.completed .status-label {
-        color: #333;
-    }
-
-    .booking-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 12px 12px 0 0;
-        padding: 20px;
-    }
-
-    .booking-header h5 {
-        margin: 0;
-        font-weight: 600;
-    }
-
-    .booking-service-info {
-        padding: 20px;
-    }
-
-    .service-image {
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 8px;
-    }
-
-    .service-details {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-
-    .detail-group {
-        flex: 1;
-    }
-
-    .detail-label {
-        font-size: 12px;
-        color: #6c757d;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
-    }
-
-    .detail-value {
-        font-size: 16px;
-        color: #333;
-        font-weight: 500;
-    }
-
-    .amount-badge {
-        display: inline-block;
-        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
-        color: white;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 14px;
-    }
-
-    .booking-footer {
-        background: #f8f9fa;
-        border-top: 1px solid #e9ecef;
-        padding: 15px 20px;
-        border-radius: 0 0 12px 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .booking-timestamp {
-        font-size: 12px;
-        color: #6c757d;
-    }
-
-    .booking-id {
-        font-size: 11px;
-        background: #e9ecef;
-        padding: 4px 8px;
-        border-radius: 4px;
-        color: #495057;
-        font-family: monospace;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-    }
-
-    .empty-state-icon {
-        font-size: 64px;
-        color: #e9ecef;
-        margin-bottom: 20px;
-    }
-
-    .empty-state-text {
-        font-size: 18px;
-        color: #6c757d;
-        margin-bottom: 30px;
-    }
-
-    .empty-state-btn {
-        display: inline-block;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 10px 30px;
-        border-radius: 6px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-    .empty-state-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
-    }
-
-    @media (max-width: 768px) {
-        .service-details {
-            flex-direction: column;
-        }
-
-        .booking-status-timeline {
-            gap: 5px;
-            margin: 15px 0;
-        }
-
-        .booking-status-timeline::before {
-            display: none;
-        }
-
-        .status-icon {
-            width: 36px;
-            height: 36px;
-            font-size: 16px;
-        }
-
-        .status-label {
-            font-size: 10px;
-        }
-    }
-</style>
-
-<div class="container py-5">
-    <div class="mb-5">
-        <h2 class="mb-2">
-            <i class="bi bi-calendar-check text-primary"></i> My Bookings
-        </h2>
-        <p class="text-muted">Track and manage all your service bookings</p>
-    </div>
-
-    {% if bookings %}
-    <div class="row">
-        {% for booking in bookings %}
-        <div class="col-lg-6 mb-4">
-            <div class="card booking-card shadow-sm">
-                <!-- Header -->
-                <div class="booking-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5>{{ booking.get_service_type_display }}</h5>
-                        <div class="booking-id">ID: {{ booking.id }}</div>
+        {% if bookings %}
+        <div style="display: flex; flex-direction: column; gap: var(--spacing-xl);">
+            {% for booking in bookings %}
+            <div class="card" style="overflow: hidden;">
+                <!-- Booking Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: var(--spacing-lg); border-bottom: 2px solid var(--bg-tertiary); margin-bottom: var(--spacing-lg);">
+                    <div>
+                        <h3 style="margin-bottom: var(--spacing-sm); font-size: 1.5rem;">{{ booking.get_service_type_display }} #{{ booking.id }}</h3>
+                        <p style="color: var(--text-tertiary); margin-bottom: var(--spacing-xs);">
+                            <i class="bi bi-calendar3"></i> {{ booking.date|date:"F d, Y" }} at {{ booking.time_slot|time:"g:i A" }}
+                        </p>
+                        <p style="color: var(--text-tertiary); font-size: 0.9rem;">
+                            <i class="bi bi-clock-history"></i> Booked {{ booking.created_at|date:"M d, Y" }}
+                        </p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="color: var(--text-tertiary); margin-bottom: var(--spacing-xs); font-size: 0.9rem;">Total Amount</p>
+                        <p style="font-weight: 700; font-size: 1.8rem; color: var(--primary); margin-bottom: var(--spacing-md);">৳{{ booking.total_amount|floatformat:0 }}</p>
                     </div>
                 </div>
 
                 <!-- Service Details -->
-                <div class="booking-service-info">
-                    {% with service=booking.get_service %}
-                    {% if service %}
-                    <!-- Service Image and Main Info -->
-                    <div class="service-details">
-                        <div>
-                            <img src="{{ service.image.url }}" alt="{{ service.title }}" class="service-image">
-                        </div>
-                        <div style="flex: 2;">
-                            <h6 class="mb-3" style="color: #333; font-weight: 600;">{{ service.title }}</h6>
-                            
-                            <div class="row mb-3">
-                                <div class="col-6">
-                                    <div class="detail-label">
-                                        <i class="bi bi-calendar-event text-primary"></i> Date
-                                    </div>
-                                    <div class="detail-value">{{ booking.date|date:"M d, Y" }}</div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="detail-label">
-                                        <i class="bi bi-clock text-success"></i> Time
-                                    </div>
-                                    <div class="detail-value">{{ booking.time_slot|time:"g:i A" }}</div>
-                                </div>
-                            </div>
-
-                            <div class="detail-label">
-                                <i class="bi bi-currency-dollar text-warning"></i> Amount
-                            </div>
-                            <span class="amount-badge">৳{{ booking.total_amount }}</span>
-
+                {% with service=booking.get_service %}
+                {% if service %}
+                <div style="margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-lg); border-bottom: 1px solid var(--bg-tertiary);">
+                    <h4 style="margin-bottom: var(--spacing-md); color: var(--text-secondary);">Service Details</h4>
+                    <div style="display: flex; gap: var(--spacing-lg); align-items: flex-start;">
+                        <img src="{{ service.image.url }}" alt="{{ service.title }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: var(--radius-md);">
+                        <div style="flex: 1;">
+                            <h5 style="margin-bottom: var(--spacing-md); color: var(--text-primary);">{{ service.title }}</h5>
                             {% if booking.requirements %}
-                            <div class="mt-3">
-                                <div class="detail-label">
-                                    <i class="bi bi-chat-left-text text-info"></i> Requirements
-                                </div>
-                                <p class="detail-value" style="font-size: 13px; margin-top: 4px;">{{ booking.requirements|truncatewords:20 }}</p>
-                            </div>
+                            <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md); line-height: 1.6;">
+                                <strong>Requirements:</strong> {{ booking.requirements|truncatewords:30 }}
+                            </p>
                             {% endif %}
                         </div>
                     </div>
-                    {% endif %}
-                    {% endwith %}
+                </div>
+                {% endif %}
+                {% endwith %}
 
-                    <!-- Status Timeline -->
-                    <div class="booking-status-timeline">
-                        <!-- Pending Step -->
-                        <div class="status-step {% if booking.status == 'pending' %}active{% elif booking.status in 'confirmed,completed' %}completed{% endif %}">
-                            <div class="status-icon">
-                                <i class="bi bi-hourglass-split"></i>
+                <!-- Status Timeline -->
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                        <div style="flex: 1;">
+                            <h4 style="margin-bottom: var(--spacing-sm); color: var(--text-secondary);">Booking Status</h4>
+                            <!-- Timeline visualization -->
+                            <div style="display: flex; gap: 0; align-items: center; margin: var(--spacing-lg) 0;">
+                                <!-- Pending -->
+                                <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: white; margin-bottom: var(--spacing-sm); {% if booking.status == 'pending' or booking.status in 'confirmed,completed' %}background-color: #7C3AED;{% else %}background-color: #D1D5DB;{% endif %} transition: all 0.3s ease;">
+                                        <i class="bi bi-hourglass-split" style="font-size: 1.2rem;"></i>
+                                    </div>
+                                    <p style="text-align: center; font-size: 0.85rem; font-weight: 600; color: {% if booking.status == 'pending' or booking.status in 'confirmed,completed' %}var(--primary){% else %}var(--text-tertiary){% endif %};">Pending</p>
+                                </div>
+                                <!-- Connector 1 -->
+                                <div style="flex: 0.5; height: 3px; background-color: {% if booking.status in 'confirmed,completed' %}#7C3AED{% else %}#D1D5DB{% endif %}; transition: background-color 0.3s ease;"></div>
+                                
+                                <!-- Confirmed -->
+                                <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: white; margin-bottom: var(--spacing-sm); {% if booking.status == 'confirmed' or booking.status == 'completed' %}background-color: #7C3AED;{% else %}background-color: #D1D5DB;{% endif %} transition: all 0.3s ease;">
+                                        <i class="bi bi-check-circle" style="font-size: 1.2rem;"></i>
+                                    </div>
+                                    <p style="text-align: center; font-size: 0.85rem; font-weight: 600; color: {% if booking.status == 'confirmed' or booking.status == 'completed' %}var(--primary){% else %}var(--text-tertiary){% endif %};">Confirmed</p>
+                                </div>
+                                <!-- Connector 2 -->
+                                <div style="flex: 0.5; height: 3px; background-color: {% if booking.status == 'completed' %}#7C3AED{% else %}#D1D5DB{% endif %}; transition: background-color 0.3s ease;"></div>
+                                
+                                <!-- Completed -->
+                                <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: white; margin-bottom: var(--spacing-sm); {% if booking.status == 'completed' %}background-color: #10B981;{% else %}background-color: #D1D5DB;{% endif %} transition: all 0.3s ease;">
+                                        <i class="bi bi-check2-all" style="font-size: 1.2rem;"></i>
+                                    </div>
+                                    <p style="text-align: center; font-size: 0.85rem; font-weight: 600; color: {% if booking.status == 'completed' %}#10B981{% else %}var(--text-tertiary){% endif %};">Completed</p>
+                                </div>
                             </div>
-                            <div class="status-label">Pending</div>
                         </div>
+                    </div>
 
-                        <!-- Confirmed Step -->
-                        <div class="status-step {% if booking.status == 'confirmed' %}active{% elif booking.status == 'completed' %}completed{% endif %}">
-                            <div class="status-icon">
-                                <i class="bi bi-check-circle"></i>
-                            </div>
-                            <div class="status-label">Confirmed</div>
+                    <!-- Status Badge & Alert -->
+                    <div style="display: flex; gap: var(--spacing-md); align-items: center; margin-bottom: var(--spacing-lg);">
+                        <div style="padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-lg); {% if booking.status == 'completed' %}background-color: #ECFDF5; border-left: 4px solid #10B981;{% elif booking.status == 'confirmed' %}background-color: #EFF6FF; border-left: 4px solid #3B82F6;{% elif booking.status == 'pending' %}background-color: #FEF3C7; border-left: 4px solid #FCD34D;{% else %}background-color: #FEE2E2; border-left: 4px solid #EF4444;{% endif %}">
+                            <span style="font-weight: 600; {% if booking.status == 'completed' %}color: #047857;{% elif booking.status == 'confirmed' %}color: #1E40AF;{% elif booking.status == 'pending' %}color: #78350F;{% else %}color: #7F1D1D;{% endif %}">
+                                <i class="bi {% if booking.status == 'completed' %}bi-check-circle{% elif booking.status == 'confirmed' %}bi-check-lg{% elif booking.status == 'pending' %}bi-clock{% else %}bi-x-circle{% endif %}" style="margin-right: var(--spacing-sm);"></i>
+                                {{ booking.get_status_display|upper }}
+                            </span>
                         </div>
-
-                        <!-- Completed Step -->
-                        <div class="status-step {% if booking.status == 'completed' %}completed{% endif %}">
-                            <div class="status-icon">
-                                <i class="bi bi-check2-all"></i>
-                            </div>
-                            <div class="status-label">Completed</div>
-                        </div>
-
-                        <!-- Cancelled Step (shown only if cancelled) -->
-                        {% if booking.status == 'cancelled' %}
-                        <div class="status-step active" style="background: none;">
-                            <div class="status-icon" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; box-shadow: 0 4px 12px rgba(220, 53, 69, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.3); animation: statusPulse 1.5s ease-in-out infinite;">
-                                <i class="bi bi-x-circle"></i>
-                            </div>
-                            <div class="status-label" style="color: #dc3545; font-weight: 700;">Cancelled</div>
-                        </div>
+                        {% if booking.status == 'completed' %}
+                        <span style="font-size: 0.85rem; color: #10B981; font-weight: 600;">✓ Service Completed</span>
+                        {% elif booking.status == 'confirmed' %}
+                        <span style="font-size: 0.85rem; color: #3B82F6; font-weight: 600;">✓ Confirmed</span>
+                        {% elif booking.status == 'pending' %}
+                        <span style="font-size: 0.85rem; color: #F59E0B; font-weight: 600;">⏳ Awaiting confirmation</span>
+                        {% else %}
+                        <span style="font-size: 0.85rem; color: #EF4444; font-weight: 600;">✗ Booking cancelled</span>
                         {% endif %}
                     </div>
                 </div>
-
-                <!-- Footer -->
-                <div class="booking-footer">
-                    <div class="booking-timestamp">
-                        <i class="bi bi-calendar2-check"></i>
-                        Booked on {{ booking.created_at|date:"M d, Y \a\t g:i A" }}
-                    </div>
-                    <span class="badge" style="background: {% if booking.status == 'pending' %}#ffc107{% elif booking.status == 'confirmed' %}#28a745{% elif booking.status == 'completed' %}#17a2b8{% else %}#dc3545{% endif %}; color: white;">
-                        {{ booking.get_status_display|upper }}
-                    </span>
-                </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="empty-state">
-        <div class="empty-state-icon">
-            <i class="bi bi-calendar-x"></i>
+        {% else %}
+        <div style="text-align: center; padding: var(--spacing-3xl) var(--spacing-xl);">
+            <i class="bi bi-calendar-x" style="font-size: 4rem; color: var(--bg-tertiary); margin-bottom: var(--spacing-lg); display: block;"></i>
+            <h3 style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">No Bookings Yet</h3>
+            <p style="color: var(--text-tertiary); margin-bottom: var(--spacing-lg);">You haven't made any service bookings. Browse our services to get started!</p>
+            <a href="{% url 'all_services' %}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: var(--spacing-md) var(--spacing-xl); border-radius: var(--radius-md); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
+                <i class="bi bi-calendar-plus"></i> Browse Services
+            </a>
         </div>
-        <p class="empty-state-text">You haven't made any bookings yet</p>
-        <p class="text-muted mb-4">Book a service to get started with EventNest</p>
-        <a href="{% url 'all_services' %}" class="empty-state-btn">
-            <i class="bi bi-calendar-plus"></i> Browse Services
-        </a>
+        {% endif %}
     </div>
-    {% endif %}
-</div>
+</section>
 {% endblock %}

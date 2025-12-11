@@ -280,31 +280,33 @@
         transform: translateY(-2px);
     }
 
-    /* Desktop Cart Badge */
+    /* Desktop Cart Badge - Simple and Visible */
+    .cart-btn {
+        position: relative;
+    }
+
     .cart-btn .cart-badge {
         position: absolute;
-        top: -10px;
-        right: -10px;
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #ff6b6b 100%);
+        top: -8px;
+        right: -8px;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
         color: white !important;
         border-radius: 50%;
-        min-width: 32px;
-        height: 32px;
-        line-height: 32px;
-        display: inline-flex !important;
+        width: 26px;
+        height: 26px;
+        display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 800 !important;
-        box-shadow: 0 4px 16px rgba(255, 107, 107, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.5);
         border: 2px solid white;
-        animation: cartBadgePulse 2s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
-        z-index: 10;
+        z-index: 999;
     }
 
     .cart-btn:hover .cart-badge {
         transform: scale(1.2) rotate(-15deg);
-        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        box-shadow: 0 6px 16px rgba(255, 107, 107, 0.7);
     }
 
     /* Mobile Cart Badge */
@@ -327,11 +329,9 @@
     @keyframes cartBadgePulse {
         0%, 100% { 
             transform: scale(1);
-            box-shadow: 0 4px 16px rgba(255, 107, 107, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.4);
         }
         50% { 
             transform: scale(1.15);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.4);
         }
     }
 
