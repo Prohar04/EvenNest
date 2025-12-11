@@ -62,9 +62,7 @@
                     <!-- Cart -->
                     <a href="{% url 'cart' %}" class="nav-action cart-icon" title="Shopping Cart">
                         <i class="bi bi-bag-fill"></i>
-                        {% if cart_count > 0 %}
-                            <span class="badge badge-primary">{{ cart_count }}</span>
-                        {% endif %}
+                        <span class="badge badge-danger cart-badge" id="cart-count">{{ cart_count }}</span>
                     </a>
 
                     <!-- Notifications -->

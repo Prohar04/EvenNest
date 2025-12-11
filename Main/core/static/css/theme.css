@@ -504,6 +504,31 @@ label {
   background: var(--accent-blue);
 }
 
+.badge-danger {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+}
+
+/* Cart Badge */
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 20px;
+  height: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid var(--bg-secondary);
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.5);
+}
+
+.cart-icon {
+  position: relative;
+}
+
 /* User Menu */
 .user-menu {
   position: relative;
