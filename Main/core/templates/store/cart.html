@@ -25,9 +25,9 @@
                             <form method="post" action="{% url 'update_cart' cart_item.id %}" style="margin-bottom: var(--spacing-md);">
                                 {% csrf_token %}
                                 <div class="flex" style="gap: var(--spacing-sm); align-items: center;">
-                                    <label>Qty:</label>
-                                    <input type="number" name="quantity" value="{{ cart_item.quantity }}" min="1" max="{{ cart_item.item.stock }}" style="width: 70px;">
-                                    <button type="submit" class="btn btn-small btn-ghost">Update</button>
+                                    <label style="font-weight: 600; color: var(--text-secondary);">Qty:</label>
+                                    <input type="number" name="quantity" value="{{ cart_item.quantity }}" min="1" max="{{ cart_item.item.stock }}" style="width: 70px; padding: 8px 12px; border: 2px solid var(--bg-tertiary); border-radius: var(--radius-md); background-color: var(--bg-primary); color: var(--text-primary); font-weight: 600; font-size: 1rem; text-align: center;">
+                                    <button type="submit" class="btn btn-small btn-ghost" style="padding: 8px 16px; font-weight: 600;">Update</button>
                                 </div>
                             </form>
 
