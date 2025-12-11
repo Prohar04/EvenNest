@@ -621,6 +621,157 @@ def create_notification(user, notification_type, title, message, link=None):
     )
 
 
+# ============== INVOICE ==============
+
+@login_required(login_url='login')
+def download_invoice(request, order_id):
+    """Download invoice as PDF"""
+    try:
+        order = Order.objects.get(id=order_id, user=request.user)
+    except Order.DoesNotExist:
+        return redirect('order_history')
+    
+    try:
+        from io import BytesIO
+        from reportlab.lib.pagesizes import letter
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib import colors
+        from reportlab.lib.units import inch
+        from datetime import datetime
+        from django.http import FileResponse
+        
+        # Create PDF in memory
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.5*inch, bottomMargin=0.5*inch)
+        elements = []
+        styles = getSampleStyleSheet()
+        
+        # Custom styles
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            textColor=colors.HexColor('#7C3AED'),
+            spaceAfter=12,
+            alignment=1  # Center
+        )
+        
+        header_style = ParagraphStyle(
+            'Header',
+            parent=styles['Normal'],
+            fontSize=11,
+            textColor=colors.HexColor('#666666'),
+            spaceAfter=6
+        )
+        
+        # Title
+        elements.append(Paragraph("INVOICE", title_style))
+        elements.append(Spacer(1, 0.2*inch))
+        
+        # Order info
+        order_info = [
+            [f"Invoice #: {order.id}", f"Date: {order.created_at.strftime('%B %d, %Y')}"],
+            [f"Status: {order.get_status_display()}", f"Amount: ৳{order.total_amount:,.2f}"],
+        ]
+        
+        info_table = Table(order_info, colWidths=[3*inch, 3*inch])
+        info_table.setStyle(TableStyle([
+            ('FONT', (0, 0), (-1, -1), 'Helvetica', 10),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#333333')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+        ]))
+        elements.append(info_table)
+        elements.append(Spacer(1, 0.3*inch))
+        
+        # Customer info
+        elements.append(Paragraph("Bill To:", styles['Heading3']))
+        customer_info = f"{order.user.get_full_name() or order.user.username}<br/>{order.shipping_address}"
+        elements.append(Paragraph(customer_info, header_style))
+        elements.append(Spacer(1, 0.2*inch))
+        
+        # Items table
+        elements.append(Paragraph("Order Items", styles['Heading3']))
+        
+        item_data = [
+            ['Product', 'Quantity', 'Price', 'Total'],
+        ]
+        
+        for order_item in order.order_items.all():
+            item_data.append([
+                order_item.item.name[:30],
+                str(order_item.quantity),
+                f"৳{order_item.price:,.2f}",
+                f"৳{order_item.get_total():,.2f}",
+            ])
+        
+        # Add total row
+        item_data.append([
+            '',
+            '',
+            'Total:',
+            f"৳{order.total_amount:,.2f}",
+        ])
+        
+        items_table = Table(item_data, colWidths=[2.5*inch, 1*inch, 1.5*inch, 1.5*inch])
+        items_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#7C3AED')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#F3E8FF')),
+            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+            ('FONTNAME', (0, 1), (-1, -2), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, colors.HexColor('#F9F5FF')]),
+        ]))
+        elements.append(items_table)
+        elements.append(Spacer(1, 0.3*inch))
+        
+        # Footer
+        footer_style = ParagraphStyle(
+            'Footer',
+            parent=styles['Normal'],
+            fontSize=9,
+            textColor=colors.grey,
+            alignment=1  # Center
+        )
+        elements.append(Paragraph(
+            "Thank you for your order! <br/>EventNest - Event Management Platform",
+            footer_style
+        ))
+        
+        # Build PDF
+        doc.build(elements)
+        buffer.seek(0)
+        
+        # Return as file download
+        response = FileResponse(buffer, as_attachment=True, filename=f'Invoice_{order.id}.pdf', content_type='application/pdf')
+        return response
+    
+    except ImportError:
+        # Fallback if reportlab not installed - return JSON with order data
+        return JsonResponse({
+            'error': 'PDF generation library not available',
+            'order_id': order.id,
+            'total': str(order.total_amount),
+            'items': [
+                {
+                    'name': item.item.name,
+                    'qty': item.quantity,
+                    'price': str(item.price),
+                    'total': str(item.get_total()),
+                }
+                for item in order.order_items.all()
+            ]
+        })
+
+
 # ============== ERROR HANDLERS ==============
 
 def handler404(request, exception):

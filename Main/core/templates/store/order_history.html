@@ -44,9 +44,9 @@
                 </div>
 
                 <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
-                    <button class="btn btn-secondary">
+                    <a href="{% url 'download_invoice' order.id %}" class="btn btn-secondary">
                         <i class="bi bi-download"></i> Download Invoice
-                    </button>
+                    </a>
                     <button class="btn btn-ghost">
                         <i class="bi bi-arrow-repeat"></i> Reorder
                     </button>
