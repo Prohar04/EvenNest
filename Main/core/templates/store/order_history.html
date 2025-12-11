@@ -129,12 +129,12 @@
                     <a href="{% url 'download_invoice' order.id %}" class="btn btn-primary" style="flex: 1; text-align: center;">
                         <i class="bi bi-file-pdf"></i> Download Invoice
                     </a>
-                    <button class="btn btn-outline-primary" style="flex: 1;">
+                    <button onclick="reorderItems({{ order.id }})" class="btn btn-outline-primary" style="flex: 1;">
                         <i class="bi bi-arrow-repeat"></i> Reorder
                     </button>
-                    <button class="btn btn-ghost">
+                    <a href="{% url 'contact' %}" class="btn btn-ghost">
                         <i class="bi bi-chat-dots"></i> Support
-                    </button>
+                    </a>
                 </div>
             </div>
             {% endfor %}
@@ -223,4 +223,68 @@
         padding: 3rem 1rem;
     }
 </style>
+
+<script>
+    function reorderItems(orderId) {
+        // Show loading message
+        const btn = event.target.closest('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Adding to cart...';
+        btn.disabled = true;
+
+        // Fetch order items
+        fetch(`/api/order/${orderId}/items/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add each item to cart
+                    const addToCartPromises = data.items.map(item => 
+                        fetch(`/cart/add/${item.id}/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value || getCookie('csrftoken'),
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ quantity: item.quantity })
+                        })
+                    );
+
+                    return Promise.all(addToCartPromises);
+                } else {
+                    throw new Error(data.error || 'Failed to reorder items');
+                }
+            })
+            .then(() => {
+                // Show success message
+                btn.innerHTML = '<i class="bi bi-check-circle"></i> Added to cart!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    // Optionally redirect to cart
+                    window.location.href = '/cart/';
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                alert('Error adding items to cart. Please try again.');
+            });
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
 {% endblock %}

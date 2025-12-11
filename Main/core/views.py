@@ -237,25 +237,50 @@ def service_detail(request, service_id):
 
 @login_required(login_url='login')
 def request_service_quote(request, service_id):
-    """Request a quote for a service"""
+    """Book a service or request a quote"""
     service = get_object_or_404(Service, id=service_id)
     
     if request.method == 'POST':
-        # Create contact inquiry
-        contact = Contact.objects.create(
-            user=request.user,
-            full_name=request.user.first_name,
-            email=request.user.email,
-            subject=f"Quote Request - {service.title}",
-            message=request.POST.get('message', ''),
-            service_type='service',
-            service_id=service.id,
-            service_name=service.title
-        )
-        messages.success(request, 'Quote request sent! We will contact you soon.')
-        return redirect('all_services')
+        try:
+            from datetime import datetime
+            
+            # Get form data
+            date_str = request.POST.get('date')
+            time_str = request.POST.get('time')
+            requirements = request.POST.get('requirements', '')
+            
+            # Parse date and time
+            booking_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            booking_time = datetime.strptime(time_str, '%H:%M').time()
+            
+            # Create booking
+            booking = Booking.objects.create(
+                user=request.user,
+                service_type='service',
+                service_id=service.id,
+                date=booking_date,
+                time_slot=booking_time,
+                requirements=requirements,
+                total_amount=service.price,
+                status='pending'
+            )
+            
+            # Create notification
+            Notification.objects.create(
+                user=request.user,
+                title='Booking Confirmed',
+                body=f'Your booking for {service.title} on {booking_date.strftime("%B %d, %Y")} at {booking_time.strftime("%I:%M %p")} has been created.',
+                type='booking'
+            )
+            
+            messages.success(request, f'Booking confirmed! Check your bookings page for details.')
+            return redirect('my_bookings')
+        except Exception as e:
+            messages.error(request, f'Error creating booking: {str(e)}')
+            return redirect('service_detail', service_id=service_id)
     
     return render(request, 'services/service_detail.html', {'service': service})
+
 
 
 @login_required(login_url='login')
@@ -619,6 +644,35 @@ def create_notification(user, notification_type, title, message, link=None):
         message=message,
         link=link
     )
+
+
+# ============== API - ORDER REORDER ==============
+
+@login_required(login_url='login')
+def api_order_items(request, order_id):
+    """Get items from an order for reordering"""
+    try:
+        order = Order.objects.get(id=order_id, user=request.user)
+        items = []
+        
+        for order_item in order.order_items.all():
+            items.append({
+                'id': order_item.item.id,
+                'name': order_item.item.name,
+                'quantity': order_item.quantity,
+                'price': str(order_item.price),
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'items': items,
+            'order_id': order.id,
+        })
+    except Order.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Order not found'
+        }, status=404)
 
 
 # ============== INVOICE ==============

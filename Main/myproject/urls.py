@@ -76,6 +76,7 @@ urlpatterns = [
     path('api/cart-count/', views.api_cart_count, name='api_cart_count'),
     path('api/services-search/', views.api_services_search, name='api_services_search'),
     path('api/items-search/', views.api_items_search, name='api_items_search'),
+    path('api/order/<int:order_id>/items/', views.api_order_items, name='api_order_items'),
 ]
 
 if settings.DEBUG:
