@@ -39,6 +39,8 @@ urlpatterns = [
     # User Profile & Bookings
     path('profile/', views.profile, name='profile'),
     path('my-bookings/', views.my_bookings, name='my_bookings'),
+    path('booking/<int:booking_id>/cancel/', views.cancel_booking, name='cancel_booking'),
+    path('booking/<int:booking_id>/modify/', views.modify_booking, name='modify_booking'),
     
     # Services
     path('services/', views.all_services, name='all_services'),

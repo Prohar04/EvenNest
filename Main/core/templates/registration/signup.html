@@ -301,12 +301,9 @@
 <body>
     <div class="auth-container">
         <div class="auth-card">
-            <div class="brand">
-                <div class="brand-icon">
-                    <i class="bi bi-calendar-event"></i>
-                </div>
-                <h1>EventNest</h1>
-                <p>Create your account and start planning</p>
+            <div class="brand" style="text-align: center; margin-bottom: 32px;">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 8px; color: #f8fafc;"><span style="color: #3B82F6;">Event</span><span style="color: #10B981;">Nest</span></h1>
+                <p style="color: #94a3b8; font-size: 14px;">Create your account and start planning</p>
             </div>
             
             {% if messages %}
@@ -367,8 +364,9 @@
                     <label for="id_phone">Phone Number</label>
                     <div class="input-wrapper">
                         <i class="bi bi-telephone"></i>
-                        <input type="text" name="phone" id="id_phone" placeholder="+880 1XXX-XXXXXX" required>
+                        <input type="text" name="phone" id="id_phone" placeholder="+8801XXXXXXXXX" required>
                     </div>
+                    <small style="color: #94a3b8; font-size: 12px; margin-top: 4px; display: block;">Format: +880 followed by 10 digits</small>
                     {% if form.phone.errors %}
                     <div class="error-text">{{ form.phone.errors.0 }}</div>
                     {% endif %}

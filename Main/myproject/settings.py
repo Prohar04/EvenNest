@@ -104,6 +104,7 @@ TEMPLATES = [
                 'core.context_processors.service_categories_processor',
                 'core.context_processors.store_categories_processor',
                 'core.context_processors.cart_processor',
+                'core.context_processors.wishlist_processor',
             ],
         },
     },

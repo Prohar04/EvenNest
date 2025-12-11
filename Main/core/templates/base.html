@@ -16,11 +16,8 @@
         <div class="container">
             <div class="navbar-wrapper">
                 <!-- Logo/Brand -->
-                <a href="{% url 'home' %}" class="navbar-brand">
-                    <div class="brand-icon">
-                        <i class="bi bi-calendar-event"></i>
-                    </div>
-                    <span class="brand-text">EventNest</span>
+                <a href="{% url 'home' %}" class="navbar-brand" style="text-decoration: none;">
+                    <span style="font-size: 1.5rem; font-weight: 700; -webkit-text-fill-color: initial;"><span style="color: #3B82F6; -webkit-text-fill-color: #3B82F6;">Event</span><span style="color: #10B981; -webkit-text-fill-color: #10B981;">Nest</span></span>
                 </a>
                 
                 <!-- Search Bar (Desktop) -->
@@ -60,9 +57,9 @@
                 <!-- Right Actions -->
                 <div class="navbar-actions">
                     <!-- Cart -->
-                    <a href="{% url 'cart' %}" class="nav-action cart-icon" title="Shopping Cart">
+                    <a href="{% url 'cart' %}" class="nav-action" title="Shopping Cart">
                         <i class="bi bi-bag-fill"></i>
-                        <span class="badge badge-danger cart-badge" id="cart-count">{{ cart_count }}</span>
+                        {% if cart_count > 0 %}<span class="cart-count" id="cart-count">{{ cart_count }}</span>{% endif %}
                     </a>
 
                     <!-- Notifications -->
@@ -70,7 +67,7 @@
                     <div class="notification-dropdown">
                         <a href="#" class="nav-action notification-btn" title="Notifications" id="notification-btn">
                             <i class="bi bi-bell-fill"></i>
-                            <span class="badge badge-secondary notification-badge" id="notification-count">0</span>
+                            <span class="notification-count" id="notification-count" style="display: none;">0</span>
                         </a>
                         <div class="notification-menu" id="notification-menu">
                             <div class="notification-header">
@@ -114,6 +111,9 @@
                                 <hr>
                                 <a href="{% url 'profile' %}" class="dropdown-item">
                                     <i class="bi bi-person"></i> My Profile
+                                </a>
+                                <a href="{% url 'wishlist' %}" class="dropdown-item">
+                                    <i class="bi bi-heart"></i> My Wishlist
                                 </a>
                                 <a href="{% url 'my_bookings' %}" class="dropdown-item">
                                     <i class="bi bi-calendar-check"></i> My Bookings
@@ -172,7 +172,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h4><i class="bi bi-calendar-event"></i> EventNest</h4>
+                    <h4 class="footer-brand"><span style="color: #3B82F6;">Event</span><span style="color: #10B981;">Nest</span></h4>
                     <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Your complete event management platform for creating unforgettable experiences across Bangladesh.</p>
                     <p style="color: var(--text-tertiary); font-size: 0.9rem;">
                         <i class="bi bi-geo-alt"></i> Banani, Dhaka 1213<br>

@@ -176,13 +176,15 @@ def logout_view(request):
 @login_required(login_url='login')
 def profile(request):
     """User profile"""
+    # Ensure user has a profile
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    
     if request.method == 'POST':
         user = request.user
         user.first_name = request.POST.get('first_name', user.first_name)
         user.last_name = request.POST.get('last_name', user.last_name)
         user.save()
         
-        profile = user.profile
         profile.phone = request.POST.get('phone', '')
         profile.address = request.POST.get('address', '')
         profile.save()
@@ -190,7 +192,10 @@ def profile(request):
         messages.success(request, 'Profile updated successfully!')
         return redirect('profile')
     
-    return render(request, 'core/profile.html')
+    context = {
+        'profile': profile,
+    }
+    return render(request, 'core/profile.html', context)
 
 
 # ============== SERVICES ==============
@@ -295,6 +300,52 @@ def my_bookings(request):
     return render(request, 'core/my_bookings.html', context)
 
 
+@login_required(login_url='login')
+def cancel_booking(request, booking_id):
+    """Cancel a booking"""
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    
+    if booking.status in ['pending', 'confirmed']:
+        booking.status = 'cancelled'
+        booking.save()
+        messages.success(request, f'Booking #{booking.id} has been cancelled successfully.')
+    else:
+        messages.error(request, 'This booking cannot be cancelled.')
+    
+    return redirect('my_bookings')
+
+
+@login_required(login_url='login')
+def modify_booking(request, booking_id):
+    """Modify a booking"""
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    
+    if booking.status not in ['pending', 'confirmed']:
+        messages.error(request, 'This booking cannot be modified.')
+        return redirect('my_bookings')
+    
+    if request.method == 'POST':
+        new_date = request.POST.get('date')
+        new_time = request.POST.get('time_slot')
+        new_requirements = request.POST.get('requirements', '')
+        
+        if new_date:
+            booking.date = new_date
+        if new_time:
+            booking.time_slot = new_time
+        if new_requirements:
+            booking.requirements = new_requirements
+        
+        booking.save()
+        messages.success(request, f'Booking #{booking.id} has been updated successfully.')
+        return redirect('my_bookings')
+    
+    context = {
+        'booking': booking,
+    }
+    return render(request, 'core/modify_booking.html', context)
+
+
 # ============== STORE ==============
 
 @login_required(login_url='login')
@@ -316,10 +367,20 @@ def all_store_items(request):
     
     categories = StoreCategory.objects.all()
     
+    # Get wishlist items for the user
+    wishlist_items = []
+    if request.user.is_authenticated:
+        try:
+            user_wishlist = Wishlist.objects.get(user=request.user)
+            wishlist_items = list(user_wishlist.items.all())
+        except Wishlist.DoesNotExist:
+            pass
+    
     context = {
         'items': items,
         'categories': categories,
         'query': query,
+        'wishlist_items': wishlist_items,
     }
     return render(request, 'store/all_items.html', context)
 
@@ -329,8 +390,18 @@ def store_item_detail(request, item_id):
     """Store item detail page"""
     item = get_object_or_404(StoreItem, id=item_id)
     
+    # Get wishlist items for the user
+    wishlist_items = []
+    if request.user.is_authenticated:
+        try:
+            user_wishlist = Wishlist.objects.get(user=request.user)
+            wishlist_items = list(user_wishlist.items.all())
+        except Wishlist.DoesNotExist:
+            pass
+    
     context = {
         'item': item,
+        'wishlist_items': wishlist_items,
     }
     return render(request, 'store/item_detail.html', context)
 

@@ -33,7 +33,15 @@
         <!-- Products Grid -->
         <div class="grid grid-3">
             {% for item in items %}
-            <div class="product-card">
+            <div class="product-card" style="position: relative;">
+                {% if user.is_authenticated %}
+                <a href="{% if item in wishlist_items %}{% url 'remove_from_wishlist' item.id %}{% else %}{% url 'add_to_wishlist' 'storeitem' item.id %}{% endif %}" 
+                   class="wishlist-btn" 
+                   style="position: absolute; top: 10px; right: 10px; z-index: 10; background: white; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: transform 0.2s;"
+                   title="{% if item in wishlist_items %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}">
+                    <i class="bi bi-heart{% if item in wishlist_items %}-fill{% endif %}" style="color: {% if item in wishlist_items %}var(--error){% else %}var(--text-tertiary){% endif %}; font-size: 1.1rem;"></i>
+                </a>
+                {% endif %}
                 <div class="card-image-container">
                     {% if item.image %}
                     <img src="{{ item.image|smart_image_url }}" alt="{{ item.name }}">

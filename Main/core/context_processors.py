@@ -4,7 +4,7 @@ These functions add data to the template context automatically.
 """
 
 from django.contrib.auth.models import User
-from core.models import ServiceCategory, StoreCategory, Cart, CartItem
+from core.models import ServiceCategory, StoreCategory, Cart, CartItem, Wishlist
 
 
 def service_categories_processor(request):
@@ -47,4 +47,20 @@ def cart_processor(request):
     
     return {
         'cart_count': cart_count,
+    }
+
+
+def wishlist_processor(request):
+    """Add wishlist information to template context."""
+    wishlist_count = 0
+    
+    if request.user.is_authenticated:
+        try:
+            wishlist = Wishlist.objects.get(user=request.user)
+            wishlist_count = wishlist.items.count()
+        except Wishlist.DoesNotExist:
+            wishlist_count = 0
+    
+    return {
+        'wishlist_count': wishlist_count,
     }

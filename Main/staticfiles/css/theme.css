@@ -336,6 +336,12 @@ label {
   min-width: 180px;
 }
 
+.brand-logo {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+}
+
 .brand-icon {
   width: 40px;
   height: 40px;
@@ -355,6 +361,15 @@ label {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Auth page logo */
+.auth-logo-img {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto var(--spacing-lg);
 }
 
 .navbar-search {
@@ -475,25 +490,35 @@ label {
   color: var(--primary);
 }
 
-.cart-icon {
-  position: relative;
+.cart-count,
+.notification-count,
+.wishlist-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 14px;
+  text-align: center;
 }
 
 .badge {
   position: absolute;
   top: -8px;
   right: -8px;
-  background: var(--danger);
+  background: var(--primary);
   color: white;
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
+  min-width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  border: 2px solid var(--bg-secondary);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.4);
 }
 
 .badge-primary {
@@ -505,7 +530,8 @@ label {
 }
 
 .badge-danger {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
 }
 
 /* Cart Badge */
@@ -959,6 +985,13 @@ label {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: var(--spacing-2xl);
   margin-bottom: var(--spacing-2xl);
+}
+
+.footer-logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: var(--spacing-lg);
 }
 
 .footer-section h4 {
