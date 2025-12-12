@@ -1,8 +1,13 @@
 # EventNest - Event Management Platform
 
 ![EventNest Logo](https://img.shields.io/badge/Event-Nest-blue?style=for-the-badge&labelColor=3B82F6&color=10B981)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://eventnest00.pythonanywhere.com)
 
 A comprehensive event management platform built with Django, designed for the Bangladesh market. EventNest connects users with professional event services including photography, catering, event management, and printing services.
+
+## 🚀 Live Demo
+
+**Website:** [https://eventnest00.pythonanywhere.com](https://eventnest00.pythonanywhere.com)
 
 ## 🌟 Features
 
