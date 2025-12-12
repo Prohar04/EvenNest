@@ -283,6 +283,7 @@ class Booking(models.Model):
     ]
     
     SERVICE_CHOICES = [
+        ('service', 'Service'),
         ('event', 'Event Management'),
         ('photo', 'Photography'),
         ('catering', 'Catering'),
@@ -311,14 +312,21 @@ class Booking(models.Model):
         return f"{self.get_service_type_display()} booking by {self.user.username}"
 
     def get_service(self):
-        if self.service_type == 'event':
-            return EventManagement.objects.get(id=self.service_id)
-        elif self.service_type == 'photo':
-            return Photography.objects.get(id=self.service_id)
-        elif self.service_type == 'catering':
-            return Catering.objects.get(id=self.service_id)
-        elif self.service_type == 'printing':
-            return PrintingService.objects.get(id=self.service_id)
+        try:
+            if self.service_type == 'service':
+                return Service.objects.get(id=self.service_id)
+            elif self.service_type == 'event':
+                return EventManagement.objects.get(id=self.service_id)
+            elif self.service_type == 'photo':
+                return Photography.objects.get(id=self.service_id)
+            elif self.service_type == 'catering':
+                return Catering.objects.get(id=self.service_id)
+            elif self.service_type == 'printing':
+                return PrintingService.objects.get(id=self.service_id)
+        except (Service.DoesNotExist, EventManagement.DoesNotExist, 
+                Photography.DoesNotExist, Catering.DoesNotExist, 
+                PrintingService.DoesNotExist):
+            return None
         return None
 
 

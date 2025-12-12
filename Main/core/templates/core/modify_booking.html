@@ -10,11 +10,13 @@
                 <i class="bi bi-pencil-square"></i> Modify Booking #{{ booking.id }}
             </h2>
             
+            {% with service=booking.get_service %}
             <div style="background: var(--bg-tertiary); padding: var(--spacing-lg); border-radius: var(--radius-md); margin-bottom: var(--spacing-xl);">
-                <p style="margin-bottom: var(--spacing-sm);"><strong>Service:</strong> {{ booking.get_service_type_display }}</p>
+                <p style="margin-bottom: var(--spacing-sm);"><strong>Service:</strong> {% if service %}{{ service.title }}{% else %}{{ booking.get_service_type_display }}{% endif %}</p>
                 <p style="margin-bottom: var(--spacing-sm);"><strong>Current Date:</strong> {{ booking.date|date:"F d, Y" }}</p>
                 <p><strong>Current Time:</strong> {{ booking.time_slot|time:"g:i A" }}</p>
             </div>
+            {% endwith %}
             
             <form method="post" action="{% url 'modify_booking' booking.id %}">
                 {% csrf_token %}
